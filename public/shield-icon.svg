@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield base -->
+  <path d="M16 2L4 6V12.5C4 20.5 8.5 27.5 16 30C23.5 27.5 28 20.5 28 12.5V6L16 2Z" fill="#000000"/>
+  <!-- Shield border -->
+  <path d="M16 2L4 6V12.5C4 20.5 8.5 27.5 16 30C23.5 27.5 28 20.5 28 12.5V6L16 2Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Shield detail lines -->
+  <path d="M16 2V30" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M4 6L28 6" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Shield checkmark -->
+  <path d="M12 16L14 18L20 12" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg> 
