@@ -185,8 +185,8 @@ You speak at a steady pace, pausing to confirm user understanding or spelling of
     ],
     "transitions": [
       {
-        "next_step": "end",
-        "condition": "After receiving the user’s final answer."
+        "next_step": "transferAgents",
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the risk_management agent using the transferAgents function."
       }
     ]
   }
