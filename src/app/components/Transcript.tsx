@@ -1,10 +1,11 @@
-"use-client";
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { TranscriptItem } from "@/app/types";
 import Image from "next/image";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
+import { useQALog } from "@/app/contexts/QALogContext"; 
 
 export interface TranscriptProps {
   userText: string;
@@ -24,6 +25,7 @@ function Transcript({
   const [prevLogs, setPrevLogs] = useState<TranscriptItem[]>([]);
   const [justCopied, setJustCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const { qaLog } = useQALog();
 
   function scrollToBottom() {
     if (transcriptRef.current) {
@@ -64,6 +66,17 @@ function Transcript({
     } catch (error) {
       console.error("Failed to copy transcript:", error);
     }
+  };
+
+  const handleExportQALog = () => {
+    const content = qaLog
+      .map((item, idx) => `Q${idx + 1}: ${item.question}\nA${idx + 1}: ${item.answer}`).join("\n\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qa_log.txt";
+    a.click();
   };
 
   return (
@@ -177,6 +190,12 @@ function Transcript({
           className="bg-gray-900 text-white rounded-full px-2 py-2 disabled:opacity-50"
         >
           <Image src="arrow.svg" alt="Send" width={24} height={24} />
+        </button>
+        <button
+          onClick={handleExportQALog}
+          className="bg-blue-500 text-white rounded-full px-4 py-2 ml-2"
+        >
+          Export Q&A
         </button>
       </div>
     </div>

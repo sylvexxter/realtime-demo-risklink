@@ -4,6 +4,7 @@ import { ServerEvent, SessionStatus, AgentConfig } from "@/app/types";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { useEvent } from "@/app/contexts/EventContext";
 import { useRef } from "react";
+import { useQALog } from "@/app/contexts/QALogContext";
 
 export interface UseHandleServerEventParams {
   setSessionStatus: (status: SessionStatus) => void;
@@ -30,6 +31,7 @@ export function useHandleServerEvent({
   } = useTranscript();
 
   const { logServerEvent } = useEvent();
+  const { addQAItem } = useQALog();
 
   const handleFunctionCall = async (functionCallParams: {
     name: string;
@@ -135,6 +137,17 @@ export function useHandleServerEvent({
             text = "[Transcribing...]";
           }
           addTranscriptMessage(itemId, role, text);
+
+          if (role === "user" && text && selectedAgentName && selectedAgentConfigSet) {
+            const currentQuestion = transcriptItems
+              .filter((item) => item.role === "assistant")
+              .slice(-1)[0]?.title || "(unknown question)";
+
+            addQAItem({
+              question: currentQuestion,
+              answer: text.trim(),
+            });
+          }
         }
         break;
       }
@@ -176,6 +189,32 @@ export function useHandleServerEvent({
             }
           });
         }
+
+        const lastQuestionItem = transcriptItems
+          .filter((item) => item.role === "assistant" && item.type === "MESSAGE")
+          .slice(-1)[0];
+
+        const lastAnswerItem = transcriptItems
+          .filter((item) => item.role === "user" && item.type === "MESSAGE")
+          .slice(-1)[0];
+ 
+        if (lastQuestionItem && lastAnswerItem) {
+         addQAItem({
+          question:
+            lastQuestionItem.title ||
+            (typeof lastQuestionItem.data === "string"
+              ? lastQuestionItem.data
+              : JSON.stringify(lastQuestionItem.data)) ||
+            "(no question)",
+          answer:
+            lastAnswerItem.title ||
+            (typeof lastAnswerItem.data === "string"
+              ? lastAnswerItem.data
+              : JSON.stringify(lastAnswerItem.data)) ||
+            "(no answer)",
+          });
+        }
+
         break;
       }
 
