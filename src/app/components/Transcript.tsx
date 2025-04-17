@@ -22,7 +22,6 @@ function Transcript({
   const { transcriptItems, toggleTranscriptItemExpand } = useTranscript();
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const [prevLogs, setPrevLogs] = useState<TranscriptItem[]>([]);
-  const [justCopied, setJustCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   function scrollToBottom() {
@@ -55,33 +54,16 @@ function Transcript({
     }
   }, [canSend]);
 
-  const handleCopyTranscript = async () => {
-    if (!transcriptRef.current) return;
-    try {
-      await navigator.clipboard.writeText(transcriptRef.current.innerText);
-      setJustCopied(true);
-      setTimeout(() => setJustCopied(false), 1500);
-    } catch (error) {
-      console.error("Failed to copy transcript:", error);
-    }
-  };
-
   return (
     <div className="flex flex-col flex-1 bg-white min-h-0 rounded-xl">
       <div className="relative flex-1 min-h-0">
-        <button
-          onClick={handleCopyTranscript}
-          className={`absolute w-20 top-3 right-2 mr-1 z-10 text-sm px-3 py-2 rounded-full bg-gray-200 hover:bg-gray-300`}
-        >
-          {justCopied ? "Copied!" : "Copy"}
-        </button>
-
         <div
           ref={transcriptRef}
           className="overflow-auto p-4 flex flex-col gap-y-4 h-full"
         >
           {transcriptItems.map((item) => {
-            const { itemId, type, role, data, expanded, timestamp, title = "", isHidden } = item;
+            const { itemId, type, role, data, expanded, timestamp, title, isHidden } = item;
+            const safeTitle = typeof title === 'string' ? title : '';
 
             if (isHidden) {
               return null;
@@ -92,9 +74,9 @@ function Transcript({
               const baseContainer = "flex justify-end flex-col";
               const containerClasses = `${baseContainer} ${isUser ? "items-end" : "items-start"}`;
               const bubbleBase = `max-w-lg p-3 rounded-xl ${isUser ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-black"}`;
-              const isBracketedMessage = title.startsWith("[") && title.endsWith("]");
+              const isBracketedMessage = safeTitle.startsWith("[") && safeTitle.endsWith("]");
               const messageStyle = isBracketedMessage ? "italic text-gray-400" : "";
-              const displayTitle = isBracketedMessage ? title.slice(1, -1) : title;
+              const displayTitle = isBracketedMessage ? safeTitle.slice(1, -1) : safeTitle;
 
               return (
                 <div key={itemId} className={containerClasses}>
@@ -130,7 +112,7 @@ function Transcript({
                         ▶
                       </span>
                     )}
-                    {title}
+                    {safeTitle}
                   </div>
                   {expanded && data && (
                     <div className="text-gray-800 text-left">

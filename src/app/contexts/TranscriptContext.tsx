@@ -6,7 +6,7 @@ import { TranscriptItem } from "@/app/types";
 
 type TranscriptContextValue = {
   transcriptItems: TranscriptItem[];
-  addTranscriptMessage: (itemId: string, role: "user" | "assistant", text: string, hidden?: boolean) => void;
+  addTranscriptMessage: (itemId: string, agentName: string, role: "user" | "assistant", text: string, hidden?: boolean) => void;
   updateTranscriptMessage: (itemId: string, text: string, isDelta: boolean) => void;
   addTranscriptBreadcrumb: (title: string, data?: Record<string, any>) => void;
   toggleTranscriptItemExpand: (itemId: string) => void;
@@ -27,7 +27,29 @@ export const TranscriptProvider: FC<PropsWithChildren> = ({ children }) => {
     });
   }
 
-  const addTranscriptMessage: TranscriptContextValue["addTranscriptMessage"] = (itemId, role, text = "", isHidden = false) => {
+  const addTranscriptMessage: TranscriptContextValue["addTranscriptMessage"] = (itemId, agentName, role, text = "", isHidden = false) => {
+    // Call the API route to log the message asynchronously
+    // Use a fire-and-forget approach, but add error handling
+    fetch('/api/log-message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ agentName, role, message: text }), // Send relevant data
+    })
+      .then(response => {
+        if (!response.ok) {
+          // Log an error if the API call fails, but don't block UI
+          console.error(`[TranscriptContext] Failed to log message via API: ${response.status} ${response.statusText}`);
+          // Optionally, you could inspect response.json() for more details
+        }
+      })
+      .catch(error => {
+        // Handle network errors
+        console.error('[TranscriptContext] Network error while logging message via API:', error);
+      });
+
+    // Continue updating the local transcript state immediately
     setTranscriptItems((prev) => {
       if (prev.some((log) => log.itemId === itemId && log.type === "MESSAGE")) {
         console.warn(`[addTranscriptMessage] skipping; message already exists for itemId=${itemId}, role=${role}, text=${text}`);

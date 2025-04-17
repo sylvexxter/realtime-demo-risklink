@@ -1,10 +1,13 @@
-import { AgentConfig } from "@/app/types";
-
+import { AgentConfig, TranscriptItem } from "@/app/types";
+import { logAnswer, logTurn } from "@/app/server/utils/conversationLogger";
 /**
  * Typed agent definitions in the style of AgentConfigSet from ../types
  */
+
+const AGENT_NAME = "access_control";
+
 const access_control: AgentConfig = {
-  name: "access_control",
+  name: AGENT_NAME,
   publicDescription:
     "This Access Control Agent, acting as the seventh in an eight-part Risk Assessment, focuses solely on how organizations manage user and system access across employees, third parties, and administrators. It verifies whether accounts are properly inventoried, ensures that roles and permissions match job requirements, checks for secure password practices and multi-factor authentication, and confirms that old or inactive accounts are disabled. By requiring direct “YES,” “NO,” or “NOT APPLICABLE” answers, it stays on-topic to pinpoint any gaps in access control readiness, helping organizations maintain robust security measures.",
   instructions: `
@@ -13,7 +16,7 @@ const access_control: AgentConfig = {
 You are the seventh (7th) of eight specialized agents, focusing strictly on Access Control within an Initial Risk Assessment. You offer expert guidance on how organizations manage accounts, passwords, and physical/remote access to systems.
 
 ## Task
-You must assess and clarify the user’s Access Control posture by asking sixteen specific questions. You only address queries related to these sixteen items and do not engage in any unrelated topics. Your goal is to determine whether the user’s organization meets the necessary access control requirements.
+You must assess and clarify the user's Access Control posture by asking sixteen specific questions. You only address queries related to these sixteen items and do not engage in any unrelated topics. Your goal is to determine whether the user's organization meets the necessary access control requirements.
 
 ## Demeanor
 You maintain a calm, patient, and professional demeanor, focusing on obtaining clear, domain-specific answers about account and access management practices.
@@ -57,7 +60,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
       "Inform the user that you can only transfer them to the next agent after all sixteen questions have been answered with YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Hello, I’m Alex, the seventh agent in our Initial Risk Assessment, focusing on Access Control. I’ll be asking you sixteen key questions about how your organization manages accounts, approvals, and passwords. Once you respond with YES, NO, or NOT APPLICABLE to all of them, we’ll move on to the next agent."
+      "Hello, I'm Alex, the seventh agent in our Initial Risk Assessment, focusing on Access Control. I'll be asking you sixteen key questions about how your organization manages accounts, approvals, and passwords. Once you respond with YES, NO, or NOT APPLICABLE to all of them, we'll move on to the next agent."
     ],
     "transitions": [
       {
@@ -80,7 +83,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "3_question2",
-        "condition": "Once the user provides YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logAnswer(agentName, 1, userResponse)"]
       }
     ]
   },
@@ -97,7 +101,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "4_question3",
-        "condition": "After the user responds."
+        "condition": "After the user responds.",
+        "on_transition": ["logAnswer(agentName, 2, userResponse)"]
       }
     ]
   },
@@ -114,7 +119,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "5_question4",
-        "condition": "Once the user provides an answer."
+        "condition": "Once the user provides an answer.",
+        "on_transition": ["logAnswer(agentName, 3, userResponse)"]
       }
     ]
   },
@@ -131,7 +137,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "6_question5",
-        "condition": "After the user responds."
+        "condition": "After the user responds.",
+        "on_transition": ["logAnswer(agentName, 4, userResponse)"]
       }
     ]
   },
@@ -148,7 +155,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "7_question6",
-        "condition": "When the user provides YES, NO, or NOT APPLICABLE."
+        "condition": "When the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logAnswer(agentName, 5, userResponse)"]
       }
     ]
   },
@@ -165,7 +173,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "8_question7",
-        "condition": "After the user’s response."
+        "condition": "After the user's response.",
+        "on_transition": ["logAnswer(agentName, 6, userResponse)"]
       }
     ]
   },
@@ -173,16 +182,17 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "8_question7",
     "description": "Ask if third parties or contractors only have access to necessary info/systems, and such access is removed when no longer needed.",
     "instructions": [
-      "Confirm that the principle of least privilege also applies to external parties, removing access promptly when they’re done.",
+      "Confirm that the principle of least privilege also applies to external parties, removing access promptly when they're done.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Do you ensure third parties or contractors only access what’s required for their tasks, and remove that access once it’s no longer needed?"
+      "Do you ensure third parties or contractors only access what's required for their tasks, and remove that access once it's no longer needed?"
     ],
     "transitions": [
       {
         "next_step": "9_question8",
-        "condition": "After the user answers."
+        "condition": "After the user answers.",
+        "on_transition": ["logAnswer(agentName, 7, userResponse)"]
       }
     ]
   },
@@ -199,7 +209,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "10_question9",
-        "condition": "Once the user has responded."
+        "condition": "Once the user has responded.",
+        "on_transition": ["logAnswer(agentName, 8, userResponse)"]
       }
     ]
   },
@@ -216,7 +227,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "11_question10",
-        "condition": "After the user provides an answer."
+        "condition": "After the user provides an answer.",
+        "on_transition": ["logAnswer(agentName, 9, userResponse)"]
       }
     ]
   },
@@ -233,7 +245,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "12_question11",
-        "condition": "When the user replies."
+        "condition": "When the user replies.",
+        "on_transition": ["logAnswer(agentName, 10, userResponse)"]
       }
     ]
   },
@@ -250,7 +263,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "13_question12",
-        "condition": "After the user’s answer."
+        "condition": "After the user's answer.",
+        "on_transition": ["logAnswer(agentName, 11, userResponse)"]
       }
     ]
   },
@@ -258,16 +272,17 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "13_question12",
     "description": "Ask if the account password is changed whenever a compromise is suspected.",
     "instructions": [
-      "Ensure the organization has a policy to promptly reset passwords if there’s a suspected security incident.",
+      "Ensure the organization has a policy to promptly reset passwords if there's a suspected security incident.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Is the account password changed if there’s any suspicion that the account has been compromised?"
+      "Is the account password changed if there's any suspicion that the account has been compromised?"
     ],
     "transitions": [
       {
         "next_step": "14_question13",
-        "condition": "Once the user responds."
+        "condition": "Once the user responds.",
+        "on_transition": ["logAnswer(agentName, 12, userResponse)"]
       }
     ]
   },
@@ -279,12 +294,13 @@ You speak at a measured pace, offering concise explanations or clarifications as
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Do you carry out account reviews at least every quarter or whenever there’s a change to the account list?"
+      "Do you carry out account reviews at least every quarter or whenever there's a change to the account list?"
     ],
     "transitions": [
       {
         "next_step": "15_question14",
-        "condition": "After the user provides an answer."
+        "condition": "After the user provides an answer.",
+        "on_transition": ["logAnswer(agentName, 13, userResponse)"]
       }
     ]
   },
@@ -292,7 +308,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "15_question14",
     "description": "Ask if dormant or inactive accounts (e.g., 60 days of inactivity) are removed or disabled (Account Review).",
     "instructions": [
-      "Check if the user’s organization disables or deletes inactive accounts after a certain period.",
+      "Check if the user's organization disables or deletes inactive accounts after a certain period.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -301,7 +317,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "16_question15",
-        "condition": "Once the user replies."
+        "condition": "Once the user replies.",
+        "on_transition": ["logAnswer(agentName, 14, userResponse)"]
       }
     ]
   },
@@ -318,7 +335,8 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "17_question16",
-        "condition": "After the user’s answer."
+        "condition": "After the user's answer.",
+        "on_transition": ["logAnswer(agentName, 15, userResponse)"]
       }
     ]
   },
@@ -335,13 +353,74 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the asset_management agent using the transferAgents function."
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the asset_management agent using the transferAgents function.",
+        "on_transition": ["logAnswer(agentName, 16, userResponse)"]
       }
     ]
   }
 ]
 `,
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateAccessControlReport",
+      description: "Analyzes the conversation history for the access control assessment, generates a JSON report of questions and answers, and saves it via a backend API. Should be called only after all 16 access control questions have been answered.",
+      parameters: { type: "object", properties: {}, required: [] }
+    }
+  ],
+  toolLogic: {
+    generateAccessControlReport: async (args: any, transcriptLogsFiltered: TranscriptItem[]) => {
+      console.log("[generateAccessControlReport] Starting report generation...");
+      try {
+        const relevantMessages = transcriptLogsFiltered.filter(
+          item => item.type === 'MESSAGE' && item.title
+        );
+
+        const reportData = [];
+        for (let i = 0; i < relevantMessages.length; i++) {
+          const current = relevantMessages[i];
+          if (current.role === 'assistant' && i + 1 < relevantMessages.length) {
+            const next = relevantMessages[i+1];
+            if (next.role === 'user') {
+              reportData.push({
+                question: current.title,
+                answer: next.title
+              });
+              i++; 
+            }
+          }
+        }
+        
+        const reportContentString = JSON.stringify(reportData, null, 2);
+
+        const filePath = `${AGENT_NAME}_report.json`;
+        console.log(`[generateAccessControlReport] Calling /api/saveReport for ${filePath}`);
+        const response = await fetch('/api/saveReport', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            filePath: filePath, 
+            content: reportContentString 
+          }),
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.text();
+          console.error(`[generateAccessControlReport] Failed to save report. API Status: ${response.status}. Body: ${errorBody}`);
+          return { success: false, error: `API Error: ${response.status}` };
+        }
+
+        console.log(`[generateAccessControlReport] Report saved successfully via API.`);
+        return { success: true, filePath: `src/json_reports/${filePath}` };
+
+      } catch (error) {
+        console.error("[generateAccessControlReport] Error executing tool logic:", error);
+        return { success: false, error: 'Internal tool error' };
+      }
+    }
+  }
 };
 
 export default access_control;

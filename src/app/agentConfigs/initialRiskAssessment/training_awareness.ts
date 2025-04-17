@@ -1,10 +1,12 @@
-import { AgentConfig } from "@/app/types";
+import { AgentConfig, TranscriptItem } from "@/app/types";
 
 /**
  * Typed agent definitions in the style of AgentConfigSet from ../types
  */
+const AGENT_NAME = "training_awareness";
+
 const training_awareness: AgentConfig = {
-  name: "training_awareness",
+  name: AGENT_NAME,
   publicDescription:
     "This Training and Awareness Agent, acting as the first in an eight-part Risk Assessment, focuses solely on how organizations educate and inform employees about cybersecurity best practices. It confirms whether a structured training program is in place, checks the depth and relevance of the topics covered (e.g., phishing, passphrase hygiene), and ensures that content is tailored to various roles. By requiring direct YES, NO or NOT APPLICABLE answers, it stays on-topic to pinpoint any gaps in training and awareness readiness, helping organizations foster a robust security culture.",
   instructions: `
@@ -45,7 +47,7 @@ You speak at a measured pace, providing concise explanations or clarifications a
 # Instructions
 - Always follow the conversation states in order, asking the three questions sequentially.
 - Do NOT entertain or respond to unrelated questions. Politely restate the current question or clarify if confusion arises.
-- After the final question is answered, call the 'generateTrainingAssessmentReport' tool.
+- After the final question is answered, call the 'generateTrainingAwarenessReport' tool.
 - Only proceed to the next agent (transfer) after the report generation step is complete.
 
 # Conversation States
@@ -127,7 +129,7 @@ You speak at a measured pace, providing concise explanations or clarifications a
     "description": "Generate and save the training and awareness assessment summary report.",
     "instructions": [
       "Inform the user that you will now summarize the assessment.",
-      "Call the 'generateTrainingAssessmentReport' function to process the conversation and save the report.",
+      "Call the 'generateTrainingAwarenessReport' function to process the conversation and save the report.",
       "Inform the user this might take a moment."
     ],
     "examples": [
@@ -136,16 +138,117 @@ You speak at a measured pace, providing concise explanations or clarifications a
     "transitions": [
       {
         "next_step": "transferAgents",
-        "condition": "After the 'generateTrainingAssessmentReport' tool has been called, transfer to the asset_management agent using the transferAgents function."
+        "condition": "After the 'generateTrainingAwarenessReport' tool has been called, transfer to the asset_management agent using the transferAgents function."
       }
     ]
   }
 ]
 `,
   // Define the tool that the agent can use
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateTrainingAwarenessReport",
+      description: "Analyzes the conversation history for the training and awareness assessment, uses an LLM to summarize the questions, generates a JSON report of summarized questions and answers, and saves it via a backend API. Should be called only after all 3 training/awareness questions have been answered.",
+      parameters: { type: "object", properties: {}, required: [] }
+    }
+  ],
   // Define the logic for the tool(s)
-  toolLogic: {},
+  toolLogic: {
+    generateTrainingAwarenessReport: async (args: any, transcriptLogsFiltered: TranscriptItem[]) => {
+      console.log("[generateTrainingAwarenessReport] Starting report generation with LLM summary...");
+      try {
+        // 1. Filter transcript and pair Q&A
+        const relevantMessages = transcriptLogsFiltered.filter(
+            item => item.type === 'MESSAGE' && item.title && !item.isHidden
+        );
+        const qaPairs: { question: string; answer: string }[] = [];
+        for (let i = 0; i < relevantMessages.length; i++) {
+          const current = relevantMessages[i];
+          if (current.role === 'assistant' && i + 1 < relevantMessages.length) {
+            const next = relevantMessages[i + 1];
+            if (next.role === 'user') {
+              // Add pairing - refinement might be needed based on actual flow
+              qaPairs.push({ question: current.title || '', answer: next.title || '' });
+              i++; // Skip the user message we just paired
+            }
+          }
+        }
+
+        if (qaPairs.length === 0) {
+            console.warn("[generateTrainingAwarenessReport] No Q&A pairs found to summarize.");
+            return { success: false, error: 'No Q&A pairs found.' };
+        }
+
+        // 2. Prepare prompt for secondary LLM
+        const llmPrompt = "You are an assistant that summarizes questions from a conversation log. Given the following JSON array of id-question-answer-additionalContext pairs, please process each question to extract its core topic or gist, summarizing it into a short question. Keep the extracted answer exactly as provided in Yes, No or Not Applicable format, and any additional context to the question if any. The questionId is the same as the id of the question in conversation states.Return the result as a valid JSON array where each object has a 'questionId' field, 'summarizedQuestion' field, an 'answer' field, and'additionalContext' field. First, does your organization provide cybersecurity awareness training for all employees—such as self-learning materials, external training sessions, or internal workshops—to ensure everyone understands security best practices? becomes does your organization provide cybersecurity awareness training?"
+        console.log("[generateTrainingAwarenessReport] Sending prompt to LLM for summary...");
+        
+        // 3. Call LLM API (replace with your actual endpoint and auth if different)
+        const llmResponse = await fetch('/api/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo",
+                messages: [{ role: "user", content: llmPrompt }],
+                temperature: 0.2,
+                response_format: { type: "json_object" }
+            }),
+        });
+
+        if (!llmResponse.ok) {
+            const errorBody = await llmResponse.text();
+            console.error(`[generateTrainingAwarenessReport] LLM API call failed: ${llmResponse.status}. Body: ${errorBody}`);
+            return { success: false, error: `LLM API Error: ${llmResponse.status}` };
+        }
+
+        // 4. Parse LLM Response
+        let summarizedData: { summarizedQuestion: string; answer: string }[] = [];
+        try {
+            const llmResult = await llmResponse.json();
+            // Adapt parsing based on your LLM API response structure
+            const llmContent = llmResult.choices?.[0]?.message?.content;
+            if (llmContent) {
+                summarizedData = JSON.parse(llmContent); 
+                // Add basic validation if needed (e.g., check if it's an array)
+                if (!Array.isArray(summarizedData)) {
+                    throw new Error("LLM did not return a valid JSON array.");
+                }
+                console.log("[generateTrainingAwarenessReport] Successfully parsed summarized data from LLM.");
+            } else {
+                 throw new Error("Could not extract content from LLM response.");
+            }
+        } catch (parseError) {
+            console.error("[generateTrainingAwarenessReport] Failed to parse LLM response:", parseError);
+            return { success: false, error: 'Failed to parse LLM response' };
+        }
+        
+        const reportContentString = JSON.stringify(summarizedData, null, 2);
+
+        // 5. Call the saveReport API
+        const filePath = `${AGENT_NAME}_report_summarized.json`; // Changed filename
+        console.log(`[generateTrainingAwarenessReport] Calling /api/saveReport for ${filePath}`);
+        const saveResponse = await fetch('/api/saveReport', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePath, content: reportContentString }),
+        });
+
+        if (!saveResponse.ok) {
+          const errorBody = await saveResponse.text();
+          console.error(`[generateTrainingAwarenessReport] Failed to save summarized report. API Status: ${saveResponse.status}. Body: ${errorBody}`);
+          return { success: false, error: `Save API Error: ${saveResponse.status}` };
+        }
+
+        console.log(`[generateTrainingAwarenessReport] Summarized report saved successfully via API.`);
+        return { success: true, filePath: `src/json_reports/${filePath}` };
+
+      } catch (error) {
+        console.error("[generateTrainingAwarenessReport] Error executing tool logic:", error);
+        return { success: false, error: 'Internal tool error' };
+      }
+    }
+  },
 };
 
 export default training_awareness;

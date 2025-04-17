@@ -1,4 +1,5 @@
 import { AgentConfig } from "@/app/types";
+import { logTurn } from "@/app/server/utils/conversationLogger";
 
 /**
  * Typed agent definitions in the style of AgentConfigSet from ../types
@@ -70,7 +71,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "2_question1",
     "description": "Ask whether anti-malware software is used and installed on endpoints (e.g., desktops, servers, VMs).",
     "instructions": [
-      "Confirm if the user’s organization deploys anti-malware solutions on relevant endpoints.",
+      "Confirm if the user's organization deploys anti-malware solutions on relevant endpoints.",
       "Provide minimal clarifications (e.g., definition of endpoints) if asked.",
       "Wait for a YES, NO, or NOT APPLICABLE response."
     ],
@@ -80,7 +81,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "3_question2",
-        "condition": "After the user responds with YES, NO, or NOT APPLICABLE."
+        "condition": "After the user responds with YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -98,7 +100,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "4_question3",
-        "condition": "Once the user provides YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -116,7 +119,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "5_question4",
-        "condition": "After receiving a YES, NO, or NOT APPLICABLE."
+        "condition": "After receiving a YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -124,7 +128,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "5_question4",
     "description": "Ask if anti-malware is configured to automatically scan files upon access (downloaded from web, USB, email).",
     "instructions": [
-      "Check whether the user’s anti-malware solution automatically inspects incoming files for threats.",
+      "Check whether the user's anti-malware solution automatically inspects incoming files for threats.",
       "Clarify typical configurations if the user needs detail.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -134,7 +138,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "6_question5",
-        "condition": "Once the user responds YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user responds YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -142,7 +147,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "6_question5",
     "description": "Ask if firewalls (network or endpoint) are deployed or switched on for devices and network traffic filtering.",
     "instructions": [
-      "Inquire if the user’s organization uses firewalls to manage inbound and outbound traffic—be it perimeter or host-based firewalls.",
+      "Inquire if the user's organization uses firewalls to manage inbound and outbound traffic—be it perimeter or host-based firewalls.",
       "Clarify examples like packet filters, DNS firewall, or application-level gateways.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -152,7 +157,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "7_question6",
-        "condition": "After the user clarifies or answers YES, NO, or NOT APPLICABLE."
+        "condition": "After the user clarifies or answers YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -161,7 +167,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "description": "Ask if the organization ensures employees only install or access authorized software from official or trusted sources.",
     "instructions": [
       "Verify if policies are in place limiting employees to official or trusted software/attachments.",
-      "Clarify what “official or trusted sources” can mean if needed.",
+      "Clarify what "official or trusted sources" can mean if needed.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -170,7 +176,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "8_question7",
-        "condition": "After the user provides YES, NO, or NOT APPLICABLE."
+        "condition": "After the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -188,7 +195,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "9_question8",
-        "condition": "Once the user confirms with YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user confirms with YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -206,7 +214,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "10_question9",
-        "condition": "After the user gives YES, NO, or NOT APPLICABLE."
+        "condition": "After the user gives YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -224,7 +233,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "11_question10",
-        "condition": "Once the user provides YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -242,7 +252,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "12_question11",
-        "condition": "Once the user responds YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user responds YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -250,9 +261,9 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "12_question11",
     "description": "Ask if anti-malware solutions are deployed on the cloud platform the organization uses.",
     "instructions": [
-      "Verify if the user’s cloud environment includes anti-malware measures (e.g., scanning, detection).",
-      "Clarify examples if the user is unsure what cloud platform protection might entail.",
-      "Wait for YES, NO, or NOT APPLICABLE."
+      "Check if the user employs sandbox testing to isolate and examine unknown or untrusted code.",
+      "Clarify sandbox function if needed.",
+      "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
       "Do you deploy or enable anti-malware solutions on your cloud platform (e.g., scanning features on cloud VMs)?"
@@ -260,7 +271,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "13_question12",
-        "condition": "After a definite YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user responds YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -268,8 +280,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "13_question12",
     "description": "Ask if only fully supported browsers and email client software with security controls are used.",
     "instructions": [
-      "Check if the user’s organization strictly uses up-to-date, fully supported browsers and email clients.",
-      "Clarify examples like popular browsers or extended support versions if needed.",
+      "Determine if the user extends anti-malware protection to cloud infrastructure (e.g., VMs, storage).",
+      "Clarify typical cloud integrations if needed.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -278,7 +290,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "14_question13",
-        "condition": "Once the user has provided YES, NO, or NOT APPLICABLE."
+        "condition": "After the user answers YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -286,8 +299,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "14_question13",
     "description": "Ask if an anti-phishing and spam filtering tool is used for the web browser and email client.",
     "instructions": [
-      "Confirm whether the organization has layered protections like spam filters and anti-phishing detection.",
-      "Offer clarifications on typical methods if user is unfamiliar.",
+      "Check if the system provides notifications/alerts to security teams or admins.",
+      "Clarify examples like email alerts or dashboard notifications.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -296,7 +309,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "15_question14",
-        "condition": "When the user answers YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user responds YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -314,7 +328,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "16_question15",
-        "condition": "Once the user has responded YES, NO, or NOT APPLICABLE."
+        "condition": "After the user provides YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -332,7 +347,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "17_question16",
-        "condition": "After the user answers YES, NO, or NOT APPLICABLE."
+        "condition": "Once the user answers YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -350,7 +366,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "18_question17",
-        "condition": "Once the user has given YES, NO, or NOT APPLICABLE."
+        "condition": "After the user responds YES, NO, or NOT APPLICABLE.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   },
@@ -368,7 +385,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "transitions": [
       {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the access_control agent using the transferAgents function."
+        "condition": "After the user has responded YES, NO, or NOT APPLICABLE, transfer to the incident_response agent using the transferAgents function.",
+        "on_transition": ["logTurn(agentName, agentMessage, userResponse)"]
       }
     ]
   }
