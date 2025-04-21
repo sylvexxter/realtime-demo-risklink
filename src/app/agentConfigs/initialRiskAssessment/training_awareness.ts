@@ -143,9 +143,130 @@ You speak at a measured pace, providing concise explanations or clarifications a
 ]
 `,
   // Define the tool that the agent can use
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateTrainingAwarenessReport",
+      description:
+        "Analyzes the conversation history after the assessment questions are answered, generates a JSON report summarizing the findings, and saves it to the server. This should be called only once, after the third question is answered and before transferring to the next agent.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  ],
   // Define the logic for the tool(s)
-  toolLogic: {},
+  toolLogic: {
+    generateTrainingAwarenessReport: async (
+      args: any, // First argument: arguments from LLM (likely empty for this tool)
+      transcriptLogs: any[] = [] // Second argument: transcript items
+    ) => {
+      // Get agent name from the config itself
+      const currentAgentName = training_awareness.name;
+      console.log(
+        `Executing tool logic for generateTrainingAwarenessReport for agent: ${currentAgentName}`
+      );
+      try {
+        // 1. Prepare the prompt for the secondary LLM (o1-mini)
+        // TODO: Refine this prompt later based on the required JSON structure and transcript analysis needs.
+        const llmPrompt = `
+You are an AI assistant processing a conversation transcript. Your task is to analyze the interaction between the 'assistant' (the Training and Awareness agent) and the 'user' to extract answers to three specific security awareness questions. You MUST output ONLY a valid JSON array containing three objects, one for each question, following the specified format precisely.
+
+**Instructions:**
+
+1.  **Analyze Transcript:** Read the provided "Conversation History" which contains relevant messages between the assistant and the user.
+2.  **Identify Q&A Pairs:** For each of the three Training and Awareness questions listed below, locate the assistant's message asking the question and the user's subsequent message answering it.
+    *   **Question 1 (ID: TA01):** Focuses on *organization-wide security awareness training for all employees*.
+    *   **Question 2 (ID: TA02):** Focuses on *coverage of key topics (phishing, passphrases, etc.)* in the training.
+    *   **Question 3 (ID: TA03):** Focuses on *differentiated training content based on roles*.
+3.  **Extract Information & Populate Fields:** For each question-answer pair, create a JSON object with these fields:
+    *   \`question_id\`: (String) Use "TA01", "TA02", or "TA03" corresponding to the question.
+    *   \`question_description\`: (String) Provide a concise summary of the question asked by the assistant (e.g., "Organization-wide training provided?").
+    *   \`answer_text\`: (String) Extract the exact keyword "YES", "NO", or "NOT APPLICABLE" (case-insensitive) from the user's response. If the user says "Yes, we do that", extract "YES". If no keyword is found, use \`null\`.
+    *   \`answer_context\`: (String) Briefly summarize any *additional* information the user provided in their answer *besides* the YES/NO/NA keyword. If only the keyword was provided, use an empty string \`""\`.
+    *   \`answer_ternary\`: (Number) Map the \`answer_text\` as follows: "YES" -> \`1\`, "NO" -> \`0\`, "NOT APPLICABLE" -> \`9\`. If \`answer_text\` is \`null\`, use \`null\`.
+4.  **Format Output:** Combine the three JSON objects into a single JSON array.
+5.  **CRITICAL:** Your entire output must be *only* the valid JSON array. Do not include *any* other text, explanation, introductory sentences, or markdown formatting.
+
+**Conversation History:**
+${JSON.stringify(transcriptLogs, null, 2)}
+
+**Output ONLY the JSON array.**
+`;
+
+        // 2. Call the secondary LLM endpoint
+        console.log("Calling secondary LLM for report generation...");
+        const llmResponse = await fetch("/api/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: llmPrompt }],
+            model: "gpt-4.1-nano-2025-04-14", // Using o1-mini as requested
+            temperature: 0.1, // Low temperature for predictable JSON output
+          }),
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          console.error("LLM API call failed:", errorText);
+          throw new Error(
+            `Failed to generate report content. LLM Status: ${llmResponse.status}`
+          );
+        }
+
+        const llmResult = await llmResponse.json();
+        // Safely access nested properties
+        const reportContent = llmResult?.choices?.[0]?.message?.content;
+
+        if (!reportContent) {
+          console.error("LLM response did not contain content:", llmResult);
+          throw new Error("Failed to get report content from LLM.");
+        }
+
+        console.log("Secondary LLM generated content:", reportContent);
+
+        // 3. Call the /api/saveReport endpoint
+        const filePath = `initialRiskAssessment/${currentAgentName}_report.json`; // Use agent name dynamically
+        console.log(`Calling /api/saveReport to save to ${filePath}...`);
+
+        const saveResponse = await fetch("/api/saveReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filePath: filePath,
+            content: reportContent, // Pass the JSON string from the LLM
+          }),
+        });
+
+        // 4. Handle the response from /api/saveReport
+        if (!saveResponse.ok) {
+          const errorText = await saveResponse.text();
+          console.error("Save report API call failed:", errorText);
+          throw new Error(
+            `Failed to save report. Server Status: ${saveResponse.status}`
+          );
+        }
+
+        const saveResult = await saveResponse.json();
+        console.log("Report saved successfully:", saveResult.message);
+
+        // Return success status to the agent
+        return {
+          status: "success",
+          message: `Assessment report for ${currentAgentName} generated and saved successfully to ${filePath}.`,
+          reportContent: reportContent, // Optionally return content if needed by agent
+        };
+      } catch (error: any) {
+        console.error("Error in generateTrainingAwarenessReport tool:", error);
+        // Return failure status to the agent
+        return {
+          status: "error",
+          message: `Failed to generate or save report for ${currentAgentName}: ${error.message}`,
+        };
+      }
+    },
+  },
 };
 
 export default training_awareness;

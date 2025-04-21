@@ -45,7 +45,66 @@ export function useHandleServerEvent({
 
     if (currentAgent?.toolLogic?.[functionCallParams.name]) {
       const fn = currentAgent.toolLogic[functionCallParams.name];
-      const fnResult = await fn(args, transcriptItems);
+
+      // const fnResult = await fn(args, transcriptItems); this was removed so if the app functionality breaks, it's because of this line
+      // --- Filtering Logic Start ---
+      // 1. Filter by type, role, and hidden status
+      let filteredItems = transcriptItems.filter(
+        (item) =>
+          item.type === "MESSAGE" &&
+          (item.role === "user" || item.role === "assistant") &&
+          !item.isHidden
+      );
+
+      // 2. Filter by Agent Context (optional but attempted)
+      try {
+        const agentStartBreadcrumbPattern = `Agent: ${selectedAgentName}`;
+        let agentStartTime = 0; // Start time of the current agent
+        let agentEndTime = Infinity; // End time (start of next agent or infinity)
+
+        // Find the start time of the current agent
+        const startBreadcrumb = transcriptItems
+          .slice()
+          .reverse()
+          .find(
+            (item) =>
+              item.type === "BREADCRUMB" &&
+              item.title === agentStartBreadcrumbPattern
+          );
+        if (startBreadcrumb) {
+          agentStartTime = startBreadcrumb.createdAtMs;
+
+          // Find the end time (start of the next *different* agent breadcrumb)
+          const endBreadcrumb = transcriptItems.find(
+            (item) =>
+              item.createdAtMs > agentStartTime &&
+              item.type === "BREADCRUMB" &&
+              item.title?.startsWith("Agent: ") && // Check if it's an agent breadcrumb
+              item.title !== agentStartBreadcrumbPattern // Ensure it's a *different* agent
+          );
+          if (endBreadcrumb) {
+            agentEndTime = endBreadcrumb.createdAtMs;
+          }
+
+          // Apply the time filter
+          filteredItems = filteredItems.filter(
+            (item) =>
+              item.createdAtMs >= agentStartTime && item.createdAtMs < agentEndTime
+          );
+        } else {
+          // Optional: Decide what to do if the start breadcrumb isn't found.
+          // Maybe log a warning, or proceed without agent context filtering.
+          console.warn(
+            `[Filter] Could not find start breadcrumb for agent: ${selectedAgentName}. Proceeding without agent context filtering.`
+          );
+        }
+      } catch (error) {
+        console.error("[Filter] Error during agent context filtering:", error);
+        // Fallback: proceed with items filtered only by type/role/hidden
+      }
+      // --- Filtering Logic End ---
+
+      const fnResult = await fn(args, filteredItems); // Pass filtered items
       addTranscriptBreadcrumb(
         `function call result: ${functionCallParams.name}`,
         fnResult
