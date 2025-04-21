@@ -269,7 +269,7 @@ function App() {
       ? null
       : {
           type: "server_vad",
-          threshold: 0.5,          // Voice detection sensitivity (0-1)
+          threshold: 0.6,          // Voice detection sensitivity (0-1)
           prefix_padding_ms: 300,  // Audio padding before speech
           silence_duration_ms: 200, // Silence duration to end speech
           create_response: true,
@@ -286,7 +286,10 @@ function App() {
         voice: "coral",
         input_audio_format: "pcm16",
         output_audio_format: "pcm16",
-        input_audio_transcription: { model: "gpt-4o-mini-transcribe" },
+        input_audio_transcription: { 
+          model: "gpt-4o-mini-transcribe",
+          language: "en"
+        },
         turn_detection: turnDetection,
         tools,
       },
