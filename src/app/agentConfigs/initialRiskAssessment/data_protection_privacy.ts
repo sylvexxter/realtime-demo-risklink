@@ -6,14 +6,14 @@ import { AgentConfig } from "@/app/types";
 const data_protection_privacy: AgentConfig = {
   name: "data_protection_privacy",
   publicDescription:
-    "This Data Protection and Privacy Agent, acting as the third in an eight-part Risk Assessment, focuses solely on how organizations handle sensitive business-critical data and comply with privacy requirements. It confirms whether a clear data inventory is maintained, checks if protective measures (e.g., encryption) are applied, and ensures employees follow proper disposal and retention procedures. By requiring direct “YES,” “NO,” or “NOT APPLICABLE” answers, it stays on-topic to pinpoint any gaps in data protection readiness, helping organizations strengthen their overall data security posture.",
+    "This Data Protection and Privacy Agent, acting as the third in an eight-part Risk Assessment, focuses solely on how organizations handle sensitive business-critical data and comply with privacy requirements. It confirms whether a clear data inventory is maintained, checks if protective measures (e.g., encryption) are applied, and ensures employees follow proper disposal and retention procedures. By requiring direct \"YES,\" \"NO,\" or \"NOT APPLICABLE\" answers, it stays on-topic to pinpoint any gaps in data protection readiness, helping organizations strengthen their overall data security posture.",
   instructions: `
 # Personality and Tone
 ## Identity
 You are the third (3rd) of eight specialized agents, focusing strictly on Data Protection and Privacy within an Initial Risk Assessment. You provide expert guidance on managing and safeguarding business-critical data, ensuring proper classification, storage, and disposal.
 
 ## Task
-You must assess and clarify the user’s Data Protection and Privacy posture by asking five specific questions. You only address questions related to these five items and do not engage in unrelated topics. Your goal is to determine whether the user’s organization meets data protection and privacy requirements.
+You must assess and clarify the user's Data Protection and Privacy posture by asking five specific questions. You only address questions related to these five items and do not engage in unrelated topics. Your goal is to determine whether the user's organization meets data protection and privacy requirements.
 
 ## Demeanor
 You maintain a calm, patient, and professional demeanor, focusing on obtaining clear, domain-specific answers that pertain exclusively to data protection and privacy.
@@ -57,7 +57,7 @@ You speak at a measured pace, providing brief clarifications as needed without s
       "Explain that you will only transfer to the next agent once these five questions are answered with YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Hello, I’m Alex, the third agent in this Initial Risk Assessment. I’ll be asking five questions about Data Protection and Privacy. Once we cover them with your YES, NO, or NOT APPLICABLE answers, we’ll move on to the next agent."
+      "Hello, I'm Alex, the third agent in this Initial Risk Assessment. I'll be asking five questions about Data Protection and Privacy. Once we cover them with your YES, NO, or NOT APPLICABLE answers, we'll move on to the next agent."
     ],
     "transitions": [
       {
@@ -86,7 +86,7 @@ You speak at a measured pace, providing brief clarifications as needed without s
   },
   {
     "id": "3_question2",
-    "description": "Ask about the organization’s process to protect its business-critical data (e.g., password-protected documents, encryption).",
+    "description": "Ask about the organization's process to protect its business-critical data (e.g., password-protected documents, encryption).",
     "instructions": [
       "Find out if a formal process exists to safeguard data, such as encryption or password protection.",
       "Clarify examples (encryption at rest, secure email) if the user requests it.",
@@ -124,7 +124,7 @@ You speak at a measured pace, providing brief clarifications as needed without s
     "id": "5_question4",
     "description": "Ask if the organization reviews its data inventory at least annually or whenever changes occur (first mention).",
     "instructions": [
-      "Verify if the user’s organization re-examines its data inventory on a yearly basis or when new data is introduced.",
+      "Verify if the user's organization re-examines its data inventory on a yearly basis or when new data is introduced.",
       "Clarify how or why annual reviews are relevant if needed.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -151,14 +151,146 @@ You speak at a measured pace, providing brief clarifications as needed without s
     ],
     "transitions": [
       {
+        "next_step": "7_generate_report",
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE."
+      }
+    ]
+  },
+  {
+    "id": "7_generate_report",
+    "description": "Generate and save the data protection & privacy assessment summary report.",
+    "instructions": [
+      "Inform the user that you will now summarize the data protection & privacy assessment.",
+      "Call the 'generateDataProtectionReport' function to process the conversation and save the report.",
+      "Inform the user this might take a moment."
+    ],
+    "examples": [
+      "Thank you for completing the data protection and privacy section. I'll summarize this assessment now, please give me a moment."
+    ],
+    "transitions": [
+      {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the backups agent using the transferAgents function."
+        "condition": "After the 'generateDataProtectionReport' tool has been called, transfer to the backups agent using the transferAgents function."
       }
     ]
   }
 ]
 `,
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateDataProtectionReport",
+      description:
+        "Analyzes the conversation history after the data protection and privacy assessment questions are answered, generates a JSON report summarizing the findings for all 5 questions, and saves it to the server. This should be called only once, after the final question (question 5) is answered and before transferring to the next agent.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  ],
+  toolLogic: {
+    generateDataProtectionReport: async (
+      args: any,
+      transcriptLogs: any[] = []
+    ) => {
+      const currentAgentName = data_protection_privacy.name;
+      console.log(
+        `Executing tool logic for ${currentAgentName} report generation.`
+      );
+      try {
+        const llmPrompt = `You are an AI assistant processing a conversation transcript. Your task is to analyze the interaction between the 'assistant' (the Data Protection & Privacy agent) and the 'user' to extract answers to five specific questions. You MUST output ONLY a valid JSON array containing five objects, one for each question, following the specified format precisely.
+
+**Instructions:**
+
+1.  **Analyze Transcript:** Read the provided "Conversation History".
+2.  **Identify Q&A Pairs:** For each of the five Data Protection & Privacy questions listed below, locate the assistant asking the question and the user's subsequent answer.
+    *   Question 1 (ID: DPP01): Maintain inventory of critical data (desc, class, loc, retention)?
+    *   Question 2 (ID: DPP02): Process to protect critical data (encryption, password)?
+    *   Question 3 (ID: DPP03): Securely shred paper-based confidential data?
+    *   Question 4 (ID: DPP04): Review data inventory annually or on change (first mention)?
+    *   Question 5 (ID: DPP05): Review data inventory annually or on change (second mention)?
+3.  **Extract Information & Populate Fields:** For each Q&A pair, create a JSON object:
+    *   \`question_id\`: (String) Use "DPP01" through "DPP05".
+    *   \`question_description\`: (String) Concise summary (e.g., "Maintain critical data inventory?").
+    *   \`answer_text\`: (String) Exact keyword "YES", "NO", or "NOT APPLICABLE" (case-insensitive). Use \`null\` if none found.
+    *   \`answer_context\`: (String) Summary of additional user explanation, or \`""\` if none.
+    *   \`answer_ternary\`: (Number) "YES" -> \`1\`, "NO" -> \`0\`, "NOT APPLICABLE" -> \`9\`. Use \`null\` if \`answer_text\` is \`null\`.
+4.  **Format Output:** Combine the five JSON objects into a single JSON array.
+5.  **CRITICAL:** Output *only* the valid JSON array. No extra text or formatting.
+
+**Conversation History:**
+${JSON.stringify(transcriptLogs, null, 2)}
+
+**Output ONLY the JSON array.**
+`;
+
+        console.log(`Calling secondary LLM for ${currentAgentName} report...`);
+        const llmResponse = await fetch("/api/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: llmPrompt }],
+            model: "gpt-4.1-nano-2025-04-14",
+            temperature: 0.1,
+          }),
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          console.error(`LLM API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to generate report content. LLM Status: ${llmResponse.status}`
+          );
+        }
+
+        const llmResult = await llmResponse.json();
+        const reportContent = llmResult?.choices?.[0]?.message?.content;
+
+        if (!reportContent) {
+          console.error(`LLM response missing content for ${currentAgentName}:`, llmResult);
+          throw new Error("Failed to get report content from LLM.");
+        }
+
+        console.log(`${currentAgentName} LLM generated content:`, reportContent);
+
+        const filePath = `initialRiskAssessment/${currentAgentName}_report.json`;
+        console.log(`Calling /api/saveReport to save to ${filePath}...`);
+
+        const saveResponse = await fetch("/api/saveReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filePath: filePath,
+            content: reportContent,
+          }),
+        });
+
+        if (!saveResponse.ok) {
+          const errorText = await saveResponse.text();
+          console.error(`Save report API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to save report. Server Status: ${saveResponse.status}`
+          );
+        }
+
+        const saveResult = await saveResponse.json();
+        console.log(`Report saved successfully for ${currentAgentName}:`, saveResult.message);
+
+        return {
+          status: "success",
+          message: `Assessment report for ${currentAgentName} saved to ${filePath}.`,
+          reportContent: reportContent,
+        };
+      } catch (error: any) {
+        console.error(`Error in ${currentAgentName} tool logic:`, error);
+        return {
+          status: "error",
+          message: `Failed to generate/save report for ${currentAgentName}: ${error.message}`,
+        };
+      }
+    },
+  },
 };
 
 export default data_protection_privacy;

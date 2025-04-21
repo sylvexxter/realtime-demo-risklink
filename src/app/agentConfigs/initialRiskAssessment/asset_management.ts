@@ -6,14 +6,14 @@ import { AgentConfig } from "@/app/types";
 const asset_management: AgentConfig = {
   name: "asset_management",
   publicDescription:
-    "This Asset Management Agent, acting as second in an eight-part Risk Assessment, focuses solely on how organizations track and secure their hardware and software assets. It verifies whether an up-to-date inventory exists, checks if end-of-life or unauthorized assets are promptly addressed, and confirms that mobile and IoT devices are properly accounted for. By requiring direct “YES,” “NO,” or “NOT APPLICABLE” answers, it stays on-topic to pinpoint any gaps in asset oversight, helping organizations maintain clear control over all their systems.",
+    "This Asset Management Agent, acting as second in an eight-part Risk Assessment, focuses solely on how organizations track and secure their hardware and software assets. It verifies whether an up-to-date inventory exists, checks if end-of-life or unauthorized assets are promptly addressed, and confirms that mobile and IoT devices are properly accounted for. By requiring direct \"YES,\" \"NO,\" or \"NOT APPLICABLE\" answers, it stays on-topic to pinpoint any gaps in asset oversight, helping organizations maintain clear control over all their systems.",
   instructions: `
 # Personality and Tone
 ## Identity
 You are the second (2nd) of eight specialized agents, focusing strictly on Asset Management within an Initial Risk Assessment. You provide expert guidance on managing hardware and software assets while adhering to a methodical assessment approach.
 
 ## Task
-You must assess and clarify the user’s Asset Management posture by asking eleven specific questions. You only address questions related to these eleven items and do not engage in unrelated topics. Your goal is to determine whether the user’s organization meets asset management requirements.
+You must assess and clarify the user's Asset Management posture by asking eleven specific questions. You only address questions related to these eleven items and do not engage in unrelated topics. Your goal is to determine whether the user's organization meets asset management requirements.
 
 ## Demeanor
 You maintain a calm, patient, and professional demeanor, focusing on obtaining clear, domain-specific answers relevant to asset management.
@@ -57,7 +57,7 @@ You speak at a measured rate, providing concise explanations or clarifications o
       "Explain that you will only proceed to the next agent after all eleven questions have been answered with YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Hello, I’m Alex, your second agent in this Initial Risk Assessment, focusing on Asset Management. I have eleven key questions on how you handle and track your hardware and software assets. We’ll move to the next agent only once these questions are fully answered with YES, NO, or NOT APPLICABLE."
+      "Hello, I'm Alex, your second agent in this Initial Risk Assessment, focusing on Asset Management. I have eleven key questions on how you handle and track your hardware and software assets. We'll move to the next agent only once these questions are fully answered with YES, NO, or NOT APPLICABLE."
     ],
     "transitions": [
       {
@@ -71,7 +71,7 @@ You speak at a measured rate, providing concise explanations or clarifications o
     "description": "Ask about maintaining an up-to-date inventory of all hardware and software assets.",
     "instructions": [
       "Verify if the organization keeps a complete, current list of its hardware and software assets.",
-      "Only provide clarifications regarding what constitutes ‘up-to-date’ if the user requests.",
+      "Only provide clarifications regarding what constitutes 'up-to-date' if the user requests.",
       "Wait for a YES, NO, or NOT APPLICABLE response."
     ],
     "examples": [
@@ -124,7 +124,7 @@ You speak at a measured rate, providing concise explanations or clarifications o
     "id": "5_question4",
     "description": "Ask about approval and risk monitoring for continued use of EOL software.",
     "instructions": [
-      "Determine if there’s a formal process to assess risk, obtain senior management sign-off, and monitor any EOL asset still in use.",
+      "Determine if there's a formal process to assess risk, obtain senior management sign-off, and monitor any EOL asset still in use.",
       "Clarify the usual reasons to temporarily continue with EOL if the user requests details.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -259,14 +259,152 @@ You speak at a measured rate, providing concise explanations or clarifications o
     ],
     "transitions": [
       {
+        "next_step": "13_generate_report",
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE."
+      }
+    ]
+  },
+  {
+    "id": "13_generate_report",
+    "description": "Generate and save the asset management assessment summary report.",
+    "instructions": [
+      "Inform the user that you will now summarize the asset management assessment.",
+      "Call the 'generateAssetManagementReport' function to process the conversation and save the report.",
+      "Inform the user this might take a moment."
+    ],
+    "examples": [
+      "Thank you for completing the asset management section. I'll summarize this assessment now, please give me a moment."
+    ],
+    "transitions": [
+      {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the data_protection_privacy agent using the transferAgents function."
+        "condition": "After the 'generateAssetManagementReport' tool has been called, transfer to the data_protection_privacy agent using the transferAgents function."
       }
     ]
   }
 ]
 `,
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateAssetManagementReport",
+      description:
+        "Analyzes the conversation history after the asset management assessment questions are answered, generates a JSON report summarizing the findings for all 11 questions, and saves it to the server. This should be called only once, after the final question (question 11) is answered and before transferring to the next agent.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  ],
+  toolLogic: {
+    generateAssetManagementReport: async (
+      args: any,
+      transcriptLogs: any[] = []
+    ) => {
+      const currentAgentName = asset_management.name;
+      console.log(
+        `Executing tool logic for ${currentAgentName} report generation.`
+      );
+      try {
+        const llmPrompt = `You are an AI assistant processing a conversation transcript. Your task is to analyze the interaction between the 'assistant' (the Asset Management agent) and the 'user' to extract answers to eleven specific asset management questions. You MUST output ONLY a valid JSON array containing eleven objects, one for each question, following the specified format precisely.
+
+**Instructions:**
+
+1.  **Analyze Transcript:** Read the provided "Conversation History".
+2.  **Identify Q&A Pairs:** For each of the eleven Asset Management questions listed below, locate the assistant asking the question and the user's subsequent answer.
+    *   Question 1 (ID: AM01): Up-to-date hardware/software inventory?
+    *   Question 2 (ID: AM02): Use certified cloud apps/instances only?
+    *   Question 3 (ID: AM03): Replace unauthorized/EOL assets?
+    *   Question 4 (ID: AM04): Approval/monitoring for continued EOL use?
+    *   Question 5 (ID: AM05): Formal onboarding process for new assets?
+    *   Question 6 (ID: AM06): Record authorization date in inventory?
+    *   Question 7 (ID: AM07): Include mobile/IoT devices in inventory?
+    *   Question 8 (ID: AM08): Inventory includes detailed hardware data?
+    *   Question 9 (ID: AM09): Inventory includes detailed software data?
+    *   Question 10 (ID: AM10): Inventory reviewed twice yearly?
+    *   Question 11 (ID: AM11): Secure disposal of assets?
+3.  **Extract Information & Populate Fields:** For each Q&A pair, create a JSON object:
+    *   \`question_id\`: (String) Use "AM01" through "AM11".
+    *   \`question_description\`: (String) Concise summary (e.g., "Up-to-date inventory?").
+    *   \`answer_text\`: (String) Exact keyword "YES", "NO", or "NOT APPLICABLE" (case-insensitive). Use \`null\` if none found.
+    *   \`answer_context\`: (String) Summary of additional user explanation, or \`""\` if none.
+    *   \`answer_ternary\`: (Number) "YES" -> \`1\`, "NO" -> \`0\`, "NOT APPLICABLE" -> \`9\`. Use \`null\` if \`answer_text\` is \`null\`.
+4.  **Format Output:** Combine the eleven JSON objects into a single JSON array.
+5.  **CRITICAL:** Output *only* the valid JSON array. No extra text or formatting.
+
+**Conversation History:**
+${JSON.stringify(transcriptLogs, null, 2)}
+
+**Output ONLY the JSON array.**
+`;
+
+        console.log(`Calling secondary LLM for ${currentAgentName} report...`);
+        const llmResponse = await fetch("/api/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: llmPrompt }],
+            model: "gpt-4.1-nano-2025-04-14",
+            temperature: 0.1,
+          }),
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          console.error(`LLM API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to generate report content. LLM Status: ${llmResponse.status}`
+          );
+        }
+
+        const llmResult = await llmResponse.json();
+        const reportContent = llmResult?.choices?.[0]?.message?.content;
+
+        if (!reportContent) {
+          console.error(`LLM response missing content for ${currentAgentName}:`, llmResult);
+          throw new Error("Failed to get report content from LLM.");
+        }
+
+        console.log(`${currentAgentName} LLM generated content:`, reportContent);
+
+        const filePath = `initialRiskAssessment/${currentAgentName}_report.json`;
+        console.log(`Calling /api/saveReport to save to ${filePath}...`);
+
+        const saveResponse = await fetch("/api/saveReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filePath: filePath,
+            content: reportContent,
+          }),
+        });
+
+        if (!saveResponse.ok) {
+          const errorText = await saveResponse.text();
+          console.error(`Save report API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to save report. Server Status: ${saveResponse.status}`
+          );
+        }
+
+        const saveResult = await saveResponse.json();
+        console.log(`Report saved successfully for ${currentAgentName}:`, saveResult.message);
+
+        return {
+          status: "success",
+          message: `Assessment report for ${currentAgentName} saved to ${filePath}.`,
+          reportContent: reportContent,
+        };
+      } catch (error: any) {
+        console.error(`Error in ${currentAgentName} tool logic:`, error);
+        return {
+          status: "error",
+          message: `Failed to generate/save report for ${currentAgentName}: ${error.message}`,
+        };
+      }
+    },
+  },
 };
 
 export default asset_management;

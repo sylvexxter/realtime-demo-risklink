@@ -202,7 +202,7 @@ ${JSON.stringify(transcriptLogs, null, 2)}
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: [{ role: "user", content: llmPrompt }],
-            model: "gpt-4.1-nano-2025-04-14", // Using o1-mini as requested
+            model: "gpt-4.1-nano-2025-04-14", // Using gpt 4.1 nano as it is fast and cheap and accurate
             temperature: 0.1, // Low temperature for predictable JSON output
           }),
         });

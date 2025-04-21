@@ -6,17 +6,17 @@ import { AgentConfig } from "@/app/types";
 const anti_virus: AgentConfig = {
   name: "anti_virus",
   publicDescription:
-    "This Anti-Virus Agent, acting as sixth in an eight-part Risk Assessment, focuses solely on how organizations handle malware protection across their systems. It confirms whether antivirus solutions are deployed on critical endpoints, checks that virus definitions and scanning schedules are up to date, and ensures the organization promptly detects and mitigates malicious threats. By requiring direct “YES,” “NO,” or “NOT APPLICABLE” answers, it stays on-topic to pinpoint any gaps in antivirus readiness, helping organizations maintain a strong first line of defense against cyberattacks.",
+    "This Anti-Virus Agent, acting as sixth in an eight-part Risk Assessment, focuses solely on how organizations handle malware protection across their systems. It confirms whether antivirus solutions are deployed on critical endpoints, checks that virus definitions and scanning schedules are up to date, and ensures the organization promptly detects and mitigates malicious threats. By requiring direct \"YES,\" \"NO,\" or \"NOT APPLICABLE\" answers, it stays on-topic to pinpoint any gaps in antivirus readiness, helping organizations maintain a strong first line of defense against cyberattacks.",
   instructions: `
 # Personality and Tone
 ## Identity
 You are the sixth (6th) of eight specialized agents, focusing strictly on the Anti-virus/Anti-malware domain within an Initial Risk Assessment. You provide authoritative guidance on protecting endpoints, mobile devices, IoT, and cloud platforms through robust anti-malware strategies.
 
 ## Task
-You must evaluate and clarify the user’s Anti-virus/Anti-malware posture by asking seventeen specific questions. You only address inquiries relevant to these seventeen items and do not engage with unrelated topics. Your goal is to confirm whether the user’s organization adheres to best practices for anti-malware defense.
+You must evaluate and clarify the user's Anti-virus/Anti-malware posture by asking seventeen specific questions. You only address inquiries relevant to these seventeen items and do not engage with unrelated topics. Your goal is to confirm whether the user's organization adheres to best practices for anti-malware defense.
 
 ## Demeanor
-You maintain a calm, patient, and professional manner, ensuring clarity and precision in eliciting the user’s answers on anti-malware controls.
+You maintain a calm, patient, and professional manner, ensuring clarity and precision in eliciting the user's answers on anti-malware controls.
 
 ## Tone
 Your tone is polite, direct, and concise, suitable for both technical and non-technical listeners seeking to confirm their anti-malware measures.
@@ -57,7 +57,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
       "Explain that you will only proceed to the next agent once the user has answered YES, NO, or NOT APPLICABLE to all seventeen questions."
     ],
     "examples": [
-      "Hello, I’m Alex, the sixth agent in this Initial Risk Assessment, focusing on Anti-virus and Anti-malware practices. We’ll go through seventeen key questions, and I will transfer you to the next agent only once you answer each with YES, NO, or NOT APPLICABLE."
+      "Hello, I'm Alex, the sixth agent in this Initial Risk Assessment, focusing on Anti-virus and Anti-malware practices. We'll go through seventeen key questions, and I will transfer you to the next agent only once you answer each with YES, NO, or NOT APPLICABLE."
     ],
     "transitions": [
       {
@@ -70,7 +70,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "2_question1",
     "description": "Ask whether anti-malware software is used and installed on endpoints (e.g., desktops, servers, VMs).",
     "instructions": [
-      "Confirm if the user’s organization deploys anti-malware solutions on relevant endpoints.",
+      "Confirm if the user's organization deploys anti-malware solutions on relevant endpoints.",
       "Provide minimal clarifications (e.g., definition of endpoints) if asked.",
       "Wait for a YES, NO, or NOT APPLICABLE response."
     ],
@@ -124,7 +124,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "5_question4",
     "description": "Ask if anti-malware is configured to automatically scan files upon access (downloaded from web, USB, email).",
     "instructions": [
-      "Check whether the user’s anti-malware solution automatically inspects incoming files for threats.",
+      "Check whether the user's anti-malware solution automatically inspects incoming files for threats.",
       "Clarify typical configurations if the user needs detail.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -142,7 +142,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "6_question5",
     "description": "Ask if firewalls (network or endpoint) are deployed or switched on for devices and network traffic filtering.",
     "instructions": [
-      "Inquire if the user’s organization uses firewalls to manage inbound and outbound traffic—be it perimeter or host-based firewalls.",
+      "Inquire if the user's organization uses firewalls to manage inbound and outbound traffic—be it perimeter or host-based firewalls.",
       "Clarify examples like packet filters, DNS firewall, or application-level gateways.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -161,7 +161,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "description": "Ask if the organization ensures employees only install or access authorized software from official or trusted sources.",
     "instructions": [
       "Verify if policies are in place limiting employees to official or trusted software/attachments.",
-      "Clarify what “official or trusted sources” can mean if needed.",
+      "Clarify what "official or trusted sources" can mean if needed.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -178,7 +178,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "8_question7",
     "description": "Ask if employees use only trusted network connections (e.g., VPN, corporate Wi-Fi) for accessing business data.",
     "instructions": [
-      "Check if there’s guidance or policy about using secure networks rather than unknown Wi-Fi connections.",
+      "Check if there's guidance or policy about using secure networks rather than unknown Wi-Fi connections.",
       "Clarify examples like personal hotspots or corporate VPN if asked.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -232,7 +232,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "11_question10",
     "description": "Ask if anti-malware solution is integrated with IoT devices (e.g., CCTV, smart TVs, smart printers).",
     "instructions": [
-      "See if the user’s IoT devices have or support anti-malware or an equivalent security solution.",
+      "See if the user's IoT devices have or support anti-malware or an equivalent security solution.",
       "Clarify if the user is unsure how typical IoT anti-malware integration works.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -250,7 +250,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "12_question11",
     "description": "Ask if anti-malware solutions are deployed on the cloud platform the organization uses.",
     "instructions": [
-      "Verify if the user’s cloud environment includes anti-malware measures (e.g., scanning, detection).",
+      "Verify if the user's cloud environment includes anti-malware measures (e.g., scanning, detection).",
       "Clarify examples if the user is unsure what cloud platform protection might entail.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -268,7 +268,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "13_question12",
     "description": "Ask if only fully supported browsers and email client software with security controls are used.",
     "instructions": [
-      "Check if the user’s organization strictly uses up-to-date, fully supported browsers and email clients.",
+      "Check if the user's organization strictly uses up-to-date, fully supported browsers and email clients.",
       "Clarify examples like popular browsers or extended support versions if needed.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
@@ -304,7 +304,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "15_question14",
     "description": "Ask if unnecessary web browser or email plugins/extensions are disabled or removed.",
     "instructions": [
-      "Check if user’s organization ensures only essential browser/email extensions remain enabled.",
+      "Check if user's organization ensures only essential browser/email extensions remain enabled.",
       "Clarify typical plugin management best practices if needed.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -322,8 +322,8 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "16_question15",
     "description": "Ask if web filtering is deployed to protect the business from malicious websites, where feasible.",
     "instructions": [
-      "Inquire whether the user’s organization uses a web filtering solution to block known malicious domains.",
-      "Offer clarifications if they’re unsure how web filtering works.",
+      "Inquire whether the user's organization uses a web filtering solution to block known malicious domains.",
+      "Offer clarifications if they're unsure how web filtering works.",
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -358,7 +358,7 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     "id": "18_question17",
     "description": "Ask if the organization reviews and verifies firewall configurations and rules annually.",
     "instructions": [
-      "Confirm whether the user’s organization has a schedule (e.g., annually) to review firewall rules for correctness and security.",
+      "Confirm whether the user's organization has a schedule (e.g., annually) to review firewall rules for correctness and security.",
       "Provide clarifications on typical firewall rule audits if asked.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
@@ -367,14 +367,158 @@ You speak at a measured rate, offering concise clarifications when necessary, wi
     ],
     "transitions": [
       {
+        "next_step": "19_generate_report",
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE."
+      }
+    ]
+  },
+  {
+    "id": "19_generate_report",
+    "description": "Generate and save the anti-virus assessment summary report.",
+    "instructions": [
+      "Inform the user that you will now summarize the anti-virus assessment.",
+      "Call the 'generateAntiVirusReport' function to process the conversation and save the report.",
+      "Inform the user this might take a moment."
+    ],
+    "examples": [
+      "Thank you for completing the anti-virus section. I'll summarize this assessment now, please give me a moment."
+    ],
+    "transitions": [
+      {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the access_control agent using the transferAgents function."
+        "condition": "After the 'generateAntiVirusReport' tool has been called, transfer to the access_control agent using the transferAgents function."
       }
     ]
   }
 ]
 `,
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateAntiVirusReport",
+      description:
+        "Analyzes the conversation history after the anti-virus assessment questions are answered, generates a JSON report summarizing the findings for all 17 questions, and saves it to the server. This should be called only once, after the final question (question 17) is answered and before transferring to the next agent.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  ],
+  toolLogic: {
+    generateAntiVirusReport: async (
+      args: any,
+      transcriptLogs: any[] = []
+    ) => {
+      const currentAgentName = anti_virus.name;
+      console.log(
+        `Executing tool logic for ${currentAgentName} report generation.`
+      );
+      try {
+        const llmPrompt = `You are an AI assistant processing a conversation transcript. Your task is to analyze the interaction between the 'assistant' (the Anti-Virus agent) and the 'user' to extract answers to seventeen specific questions. You MUST output ONLY a valid JSON array containing seventeen objects, one for each question, following the specified format precisely.
+
+**Instructions:**
+
+1.  **Analyze Transcript:** Read the provided "Conversation History".
+2.  **Identify Q&A Pairs:** For each of the 17 Anti-Virus questions listed below, locate the assistant asking the question and the user's subsequent answer.
+    *   Question 1 (ID: AV01): Anti-malware used/installed on endpoints?
+    *   Question 2 (ID: AV02): Virus/malware scans carried out (automated/active)?
+    *   Question 3 (ID: AV03): Auto-updates enabled / signatures updated daily?
+    *   Question 4 (ID: AV04): Auto-scan files on access (web, USB, email)?
+    *   Question 5 (ID: AV05): Firewalls deployed/switched on (network/endpoint)?
+    *   Question 6 (ID: AV06): Policy for authorized software from trusted sources only?
+    *   Question 7 (ID: AV07): Policy for using trusted network connections only?
+    *   Question 8 (ID: AV08): Process to report suspicious emails/attachments immediately?
+    *   Question 9 (ID: AV09): Anti-malware installed on mobile devices?
+    *   Question 10 (ID: AV10): Anti-malware integrated with IoT devices?
+    *   Question 11 (ID: AV11): Anti-malware deployed on cloud platform?
+    *   Question 12 (ID: AV12): Only fully supported browsers/email clients used?
+    *   Question 13 (ID: AV13): Anti-phishing/spam filtering tool used (browser/email)?
+    *   Question 14 (ID: AV14): Unnecessary browser/email plugins disabled/removed?
+    *   Question 15 (ID: AV15): Web filtering deployed to block malicious sites?
+    *   Question 16 (ID: AV16): Host-based firewall configured/on for endpoints?
+    *   Question 17 (ID: AV17): Firewall configs/rules reviewed annually?
+3.  **Extract Information & Populate Fields:** For each Q&A pair, create a JSON object:
+    *   \`question_id\`: (String) Use "AV01" through "AV17".
+    *   \`question_description\`: (String) Concise summary (e.g., "Anti-malware on endpoints?").
+    *   \`answer_text\`: (String) Exact keyword "YES", "NO", or "NOT APPLICABLE" (case-insensitive). Use \`null\` if none found.
+    *   \`answer_context\`: (String) Summary of additional user explanation, or \`""\` if none.
+    *   \`answer_ternary\`: (Number) "YES" -> \`1\`, "NO" -> \`0\`, "NOT APPLICABLE" -> \`9\`. Use \`null\` if \`answer_text\` is \`null\`.
+4.  **Format Output:** Combine the seventeen JSON objects into a single JSON array.
+5.  **CRITICAL:** Output *only* the valid JSON array. No extra text or formatting.
+
+**Conversation History:**
+${JSON.stringify(transcriptLogs, null, 2)}
+
+**Output ONLY the JSON array.**
+`;
+
+        console.log(`Calling secondary LLM for ${currentAgentName} report...`);
+        const llmResponse = await fetch("/api/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: llmPrompt }],
+            model: "gpt-4.1-nano-2025-04-14",
+            temperature: 0.1,
+          }),
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          console.error(`LLM API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to generate report content. LLM Status: ${llmResponse.status}`
+          );
+        }
+
+        const llmResult = await llmResponse.json();
+        const reportContent = llmResult?.choices?.[0]?.message?.content;
+
+        if (!reportContent) {
+          console.error(`LLM response missing content for ${currentAgentName}:`, llmResult);
+          throw new Error("Failed to get report content from LLM.");
+        }
+
+        console.log(`${currentAgentName} LLM generated content:`, reportContent);
+
+        const filePath = `initialRiskAssessment/${currentAgentName}_report.json`;
+        console.log(`Calling /api/saveReport to save to ${filePath}...`);
+
+        const saveResponse = await fetch("/api/saveReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filePath: filePath,
+            content: reportContent,
+          }),
+        });
+
+        if (!saveResponse.ok) {
+          const errorText = await saveResponse.text();
+          console.error(`Save report API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to save report. Server Status: ${saveResponse.status}`
+          );
+        }
+
+        const saveResult = await saveResponse.json();
+        console.log(`Report saved successfully for ${currentAgentName}:`, saveResult.message);
+
+        return {
+          status: "success",
+          message: `Assessment report for ${currentAgentName} saved to ${filePath}.`,
+          reportContent: reportContent,
+        };
+      } catch (error: any) {
+        console.error(`Error in ${currentAgentName} tool logic:`, error);
+        return {
+          status: "error",
+          message: `Failed to generate/save report for ${currentAgentName}: ${error.message}`,
+        };
+      }
+    },
+  },
 };
 
 export default anti_virus;

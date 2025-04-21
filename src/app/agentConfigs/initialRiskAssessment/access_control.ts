@@ -6,14 +6,14 @@ import { AgentConfig } from "@/app/types";
 const access_control: AgentConfig = {
   name: "access_control",
   publicDescription:
-    "This Access Control Agent, acting as the seventh in an eight-part Risk Assessment, focuses solely on how organizations manage user and system access across employees, third parties, and administrators. It verifies whether accounts are properly inventoried, ensures that roles and permissions match job requirements, checks for secure password practices and multi-factor authentication, and confirms that old or inactive accounts are disabled. By requiring direct “YES,” “NO,” or “NOT APPLICABLE” answers, it stays on-topic to pinpoint any gaps in access control readiness, helping organizations maintain robust security measures.",
+    "This Access Control Agent, acting as the seventh in an eight-part Risk Assessment, focuses solely on how organizations manage user and system access across employees, third parties, and administrators. It verifies whether accounts are properly inventoried, ensures that roles and permissions match job requirements, checks for secure password practices and multi-factor authentication, and confirms that old or inactive accounts are disabled. By requiring direct \"YES,\" \"NO,\" or \"NOT APPLICABLE\" answers, it stays on-topic to pinpoint any gaps in access control readiness, helping organizations maintain robust security measures.",
   instructions: `
 # Personality and Tone
 ## Identity
 You are the seventh (7th) of eight specialized agents, focusing strictly on Access Control within an Initial Risk Assessment. You offer expert guidance on how organizations manage accounts, passwords, and physical/remote access to systems.
 
 ## Task
-You must assess and clarify the user’s Access Control posture by asking sixteen specific questions. You only address queries related to these sixteen items and do not engage in any unrelated topics. Your goal is to determine whether the user’s organization meets the necessary access control requirements.
+You must assess and clarify the user's Access Control posture by asking sixteen specific questions. You only address queries related to these sixteen items and do not engage in any unrelated topics. Your goal is to determine whether the user's organization meets the necessary access control requirements.
 
 ## Demeanor
 You maintain a calm, patient, and professional demeanor, focusing on obtaining clear, domain-specific answers about account and access management practices.
@@ -57,7 +57,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
       "Inform the user that you can only transfer them to the next agent after all sixteen questions have been answered with YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Hello, I’m Alex, the seventh agent in our Initial Risk Assessment, focusing on Access Control. I’ll be asking you sixteen key questions about how your organization manages accounts, approvals, and passwords. Once you respond with YES, NO, or NOT APPLICABLE to all of them, we’ll move on to the next agent."
+      "Hello, I'm Alex, the seventh agent in our Initial Risk Assessment, focusing on Access Control. I'll be asking you sixteen key questions about how your organization manages accounts, approvals, and passwords. Once you respond with YES, NO, or NOT APPLICABLE to all of them, we'll move on to the next agent."
     ],
     "transitions": [
       {
@@ -165,7 +165,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "8_question7",
-        "condition": "After the user’s response."
+        "condition": "After the user's response."
       }
     ]
   },
@@ -173,11 +173,11 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "8_question7",
     "description": "Ask if third parties or contractors only have access to necessary info/systems, and such access is removed when no longer needed.",
     "instructions": [
-      "Confirm that the principle of least privilege also applies to external parties, removing access promptly when they’re done.",
+      "Confirm that the principle of least privilege also applies to external parties, removing access promptly when they're done.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Do you ensure third parties or contractors only access what’s required for their tasks, and remove that access once it’s no longer needed?"
+      "Do you ensure third parties or contractors only access what's required for their tasks, and remove that access once it's no longer needed?"
     ],
     "transitions": [
       {
@@ -250,7 +250,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "13_question12",
-        "condition": "After the user’s answer."
+        "condition": "After the user's answer."
       }
     ]
   },
@@ -258,11 +258,11 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "13_question12",
     "description": "Ask if the account password is changed whenever a compromise is suspected.",
     "instructions": [
-      "Ensure the organization has a policy to promptly reset passwords if there’s a suspected security incident.",
+      "Ensure the organization has a policy to promptly reset passwords if there's a suspected security incident.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Is the account password changed if there’s any suspicion that the account has been compromised?"
+      "Is the account password changed if there's any suspicion that the account has been compromised?"
     ],
     "transitions": [
       {
@@ -279,7 +279,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
       "Await YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
-      "Do you carry out account reviews at least every quarter or whenever there’s a change to the account list?"
+      "Do you carry out account reviews at least every quarter or whenever there's a change to the account list?"
     ],
     "transitions": [
       {
@@ -292,7 +292,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "id": "15_question14",
     "description": "Ask if dormant or inactive accounts (e.g., 60 days of inactivity) are removed or disabled (Account Review).",
     "instructions": [
-      "Check if the user’s organization disables or deletes inactive accounts after a certain period.",
+      "Check if the user's organization disables or deletes inactive accounts after a certain period.",
       "Wait for YES, NO, or NOT APPLICABLE."
     ],
     "examples": [
@@ -318,7 +318,7 @@ You speak at a measured pace, offering concise explanations or clarifications as
     "transitions": [
       {
         "next_step": "17_question16",
-        "condition": "After the user’s answer."
+        "condition": "After the user's answer."
       }
     ]
   },
@@ -334,14 +334,157 @@ You speak at a measured pace, offering concise explanations or clarifications as
     ],
     "transitions": [
       {
+        "next_step": "18_generate_report",
+        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE."
+      }
+    ]
+  },
+  {
+    "id": "18_generate_report",
+    "description": "Generate and save the access control assessment summary report.",
+    "instructions": [
+      "Inform the user that you will now summarize the access control assessment.",
+      "Call the 'generateAccessControlReport' function to process the conversation and save the report.",
+      "Inform the user this might take a moment."
+    ],
+    "examples": [
+      "Thank you for completing the access control section. I'll summarize this assessment now, please give me a moment."
+    ],
+    "transitions": [
+      {
         "next_step": "transferAgents",
-        "condition": "After the user has clarified any uncertainties and responded with YES, NO, or NOT APPLICABLE, transfer to the asset_management agent using the transferAgents function."
+        "condition": "After the 'generateAccessControlReport' tool has been called, transfer to the end_assessment agent (or the 8th agent) using the transferAgents function."
       }
     ]
   }
 ]
 `,
-  tools: [],
+  tools: [
+    {
+      type: "function",
+      name: "generateAccessControlReport",
+      description:
+        "Analyzes the conversation history after the access control assessment questions are answered, generates a JSON report summarizing the findings for all 16 questions, and saves it to the server. This should be called only once, after the final question (question 16) is answered and before transferring to the next agent.",
+      parameters: {
+        type: "object",
+        properties: {},
+        required: [],
+      },
+    },
+  ],
+  toolLogic: {
+    generateAccessControlReport: async (
+      args: any,
+      transcriptLogs: any[] = []
+    ) => {
+      const currentAgentName = access_control.name;
+      console.log(
+        `Executing tool logic for ${currentAgentName} report generation.`
+      );
+      try {
+        const llmPrompt = `You are an AI assistant processing a conversation transcript. Your task is to analyze the interaction between the 'assistant' (the Access Control agent) and the 'user' to extract answers to sixteen specific questions. You MUST output ONLY a valid JSON array containing sixteen objects, one for each question, following the specified format precisely.
+
+**Instructions:**
+
+1.  **Analyze Transcript:** Read the provided "Conversation History".
+2.  **Identify Q&A Pairs:** For each of the 16 Access Control questions listed below, locate the assistant asking the question and the user's subsequent answer.
+    *   Question 1 (ID: AC01): Account management established for inventory?
+    *   Question 2 (ID: AC02): Inventory contains required details (name, user, role, dates)?
+    *   Question 3 (ID: AC03): Process/approval for granting/revoking access?
+    *   Question 4 (ID: AC04): Access limited to required info/systems (least privilege)?
+    *   Question 5 (ID: AC05): Unrequired accounts disabled/removed?
+    *   Question 6 (ID: AC06): Admin account only used for admin tasks with approval?
+    *   Question 7 (ID: AC07): Third-party access limited and removed when done?
+    *   Question 8 (ID: AC08): Third parties sign NDA for sensitive info?
+    *   Question 9 (ID: AC09): Physical access control enforced (locks, cards)?
+    *   Question 10 (ID: AC10): Default passwords changed to strong passphrases?
+    *   Question 11 (ID: AC11): Accounts disabled/locked after failed logins?
+    *   Question 12 (ID: AC12): Password changed if compromise suspected?
+    *   Question 13 (ID: AC13): Account reviews quarterly or on change?
+    *   Question 14 (ID: AC14): Dormant/inactive accounts removed/disabled (60 days)?
+    *   Question 15 (ID: AC15): 2FA used for admin access where feasible?
+    *   Question 16 (ID: AC16): Password manager used where feasible?
+3.  **Extract Information & Populate Fields:** For each Q&A pair, create a JSON object:
+    *   \`question_id\`: (String) Use "AC01" through "AC16".
+    *   \`question_description\`: (String) Concise summary (e.g., "Account inventory established?").
+    *   \`answer_text\`: (String) Exact keyword "YES", "NO", or "NOT APPLICABLE" (case-insensitive). Use \`null\` if none found.
+    *   \`answer_context\`: (String) Summary of additional user explanation, or \`""\` if none.
+    *   \`answer_ternary\`: (Number) "YES" -> \`1\`, "NO" -> \`0\`, "NOT APPLICABLE" -> \`9\`. Use \`null\` if \`answer_text\` is \`null\`.
+4.  **Format Output:** Combine the sixteen JSON objects into a single JSON array.
+5.  **CRITICAL:** Output *only* the valid JSON array. No extra text or formatting.
+
+**Conversation History:**
+${JSON.stringify(transcriptLogs, null, 2)}
+
+**Output ONLY the JSON array.**
+`;
+
+        console.log(`Calling secondary LLM for ${currentAgentName} report...`);
+        const llmResponse = await fetch("/api/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: llmPrompt }],
+            model: "gpt-4.1-nano-2025-04-14",
+            temperature: 0.1,
+          }),
+        });
+
+        if (!llmResponse.ok) {
+          const errorText = await llmResponse.text();
+          console.error(`LLM API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to generate report content. LLM Status: ${llmResponse.status}`
+          );
+        }
+
+        const llmResult = await llmResponse.json();
+        const reportContent = llmResult?.choices?.[0]?.message?.content;
+
+        if (!reportContent) {
+          console.error(`LLM response missing content for ${currentAgentName}:`, llmResult);
+          throw new Error("Failed to get report content from LLM.");
+        }
+
+        console.log(`${currentAgentName} LLM generated content:`, reportContent);
+
+        const filePath = `initialRiskAssessment/${currentAgentName}_report.json`;
+        console.log(`Calling /api/saveReport to save to ${filePath}...`);
+
+        const saveResponse = await fetch("/api/saveReport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filePath: filePath,
+            content: reportContent,
+          }),
+        });
+
+        if (!saveResponse.ok) {
+          const errorText = await saveResponse.text();
+          console.error(`Save report API call failed for ${currentAgentName}:`, errorText);
+          throw new Error(
+            `Failed to save report. Server Status: ${saveResponse.status}`
+          );
+        }
+
+        const saveResult = await saveResponse.json();
+        console.log(`Report saved successfully for ${currentAgentName}:`, saveResult.message);
+
+        return {
+          status: "success",
+          message: `Assessment report for ${currentAgentName} saved to ${filePath}.`,
+          reportContent: reportContent,
+        };
+      } catch (error: any) {
+        console.error(`Error in ${currentAgentName} tool logic:`, error);
+        return {
+          status: "error",
+          message: `Failed to generate/save report for ${currentAgentName}: ${error.message}`,
+        };
+      }
+    },
+  },
 };
 
 export default access_control;
