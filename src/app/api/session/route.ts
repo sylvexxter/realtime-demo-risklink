@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export async function GET() {
+  // Clear out old JSON reports for a fresh session
+  const reportDir = path.join(process.cwd(), 'src', 'json_reports', 'initialRiskAssessment');
+  try {
+    const files = await fs.readdir(reportDir);
+    for (const file of files) {
+      if (file.endsWith('.json')) {
+        await fs.unlink(path.join(reportDir, file));
+      }
+    }
+  } catch (err) {
+    console.error('Error clearing old JSON reports:', err);
+  }
   try {
     const response = await fetch(
       "https://api.openai.com/v1/realtime/sessions",

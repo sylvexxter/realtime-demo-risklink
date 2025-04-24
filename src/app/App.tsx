@@ -420,6 +420,33 @@ function App() {
   };
 
   /**
+   * Handles downloading the generated PDF report
+   */
+  const handleDownloadReport = async () => {
+    try {
+      const response = await fetch('/api/report/download');
+      if (!response.ok) {
+        console.error('Failed to generate report', response.status);
+        return;
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="(.+)"/);
+      const filename = match ? match[1] : 'Risk_Assessment_Report.pdf';
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download report', error);
+    }
+  };
+
+  /**
    * Effect: Load saved UI preferences
    * Restores user preferences from localStorage
    */
@@ -485,79 +512,18 @@ function App() {
       {/* Header Section */}
       <div className="h-16 px-5 text-lg font-semibold flex justify-between items-center">
         <div className="flex items-center h-full">
-          <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }} className="flex items-center h-full">
-            <Image
-              src="/shield-icon.svg"
-              alt="Security Shield"
-              width={32}
-              height={32}
-              className="mr-2"
-            />
-          </div>
           <div>
             Cybersecurity <span className="text-gray-500">Risk Assessment</span>
           </div>
         </div>
         <div className="flex items-center">
-          <label className="flex items-center text-base gap-1 mr-2 font-medium">
-            Scenario
-          </label>
-          <div className="relative inline-block">
-            <select
-              value={agentSetKey}
-              onChange={handleAgentChange}
-              className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-            >
-              {Object.keys(allAgentSets).map((agentKey) => (
-                <option key={agentKey} value={agentKey}>
-                  {agentKey}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-              <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {agentSetKey && (
-            <div className="flex items-center ml-6">
-              <label className="flex items-center text-base gap-1 mr-2 font-medium">
-                Agent
-              </label>
-              <div className="relative inline-block">
-                <select
-                  value={selectedAgentName}
-                  onChange={handleSelectedAgentChange}
-                  className="appearance-none border border-gray-300 rounded-lg text-base px-2 py-1 pr-8 cursor-pointer font-normal focus:outline-none"
-                >
-                  {selectedAgentConfigSet?.map(agent => (
-                    <option key={agent.name} value={agent.name}>
-                      {agent.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
-                  <svg
-                    className="h-4 w-4"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 10.44l3.71-3.21a.75.75 0 111.04 1.08l-4.25 3.65a.75.75 0 01-1.04 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Download Report button only (scenario & agent selectors removed) */}
+          <button
+            onClick={handleDownloadReport}
+            className="ml-6 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
+          >
+            Download Report
+          </button>
         </div>
       </div>
 

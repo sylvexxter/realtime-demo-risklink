@@ -1,4 +1,4 @@
-#!/Users/sneh/Desktop/idx/realtime-demo-risklink/venv/bin/python3
+#!/Users/Lenovo/Documents/tyscript_realtime_risklink/realtime-demo-risklink/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys
