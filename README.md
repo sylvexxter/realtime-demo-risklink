@@ -95,3 +95,39 @@ To automatically capture key information during the `initialRiskAssessment` flow
 **Outcome:**
 
 This provides a structured, automated way to log both the initial user information and the detailed responses gathered during each stage of the `initialRiskAssessment`. These JSON files can be used for review, analysis, or integration with other systems.
+
+### Optional: Headless PDF Conversion with LibreOffice
+
+If you don't have Microsoft Word installed (e.g., on Linux), you can install LibreOffice and use it to convert DOCX to PDF:
+
+- **macOS (Homebrew):**
+  ```bash
+  brew install --cask libreoffice
+  ```
+- **Ubuntu/Debian:**
+  ```bash
+  sudo apt-get update
+  sudo apt-get install libreoffice-writer libreoffice-core
+  ```
+
+Then, in `pdf_reporting/report_generation.py`, add a fallback around the existing `convert` call:
+```python
+from docx2pdf import convert
+
+# ... earlier code rendering and saving `final_docx` ...
+try:
+    # Primary conversion using docx2pdf (Windows/macOS)
+    convert(final_docx, final_pdf)
+except Exception:
+    # Fallback to LibreOffice headless conversion
+    import subprocess, os
+    subprocess.run([
+        'soffice',
+        '--headless',
+        '--convert-to', 'pdf',
+        final_docx,
+        '--outdir', os.getcwd()
+    ], check=True)
+```
+
+This ensures your DOCX template is converted to PDF on any platform that has LibreOffice installed.

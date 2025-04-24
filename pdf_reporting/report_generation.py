@@ -4,6 +4,7 @@ from docxtpl import DocxTemplate
 from docx import Document
 from docx2pdf import convert
 from datetime import datetime
+import subprocess
 import os
 
 # Paths
@@ -100,6 +101,12 @@ company_clean = user_info["organization"].replace(" ", "_")
 final_docx = f"Risk_Assessment_Report_{company_clean}.docx"
 final_pdf = f"Risk_Assessment_Report_{company_clean}.pdf"
 doc.save(final_docx)
-convert(final_docx, final_pdf)
-
+#convert(final_docx, final_pdf)
+subprocess.run([
+    "/Applications/LibreOffice.app/Contents/MacOS/soffice",
+    "--headless",
+    "--convert-to", "pdf",
+    "--outdir", ".",
+    final_docx
+])
 print(f"✅ PDF generated: {final_pdf}")
