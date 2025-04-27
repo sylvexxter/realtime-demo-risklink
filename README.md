@@ -52,22 +52,26 @@ Once the prerequisites are installed:
     git clone <https://github.com/sylvexxter/realtime-demo-risklink.git> 
     cd <realtime-demo-risklink>
     ```
-2.  **Install dependencies:**
+2.  **Install Node.js dependencies:**
     ```bash
     npm install
     ```
     *(If you prefer yarn: `yarn install`)*
-3.  **Configure Environment Variables:**
+3.  **Install Python dependencies (for PDF generation):**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Configure Environment Variables:**
     *   Create a file named `.env` in the root directory of the project.
     *   Add your OpenAI API Key to this file:
         ```
         OPENAI_API_KEY=your_api_key_here
         ```
-4.  **Run the application:**
+5.  **Run the application:**
     ```bash
     npm run dev
     ```
-5.  Open your browser to [http://localhost:3000](http://localhost:3000). The application should load and be ready for interaction.
+6.  Open your browser to [http://localhost:3000](http://localhost:3000). The application should load and be ready for interaction.
 
 ## 6. PDF Report Generation
 
