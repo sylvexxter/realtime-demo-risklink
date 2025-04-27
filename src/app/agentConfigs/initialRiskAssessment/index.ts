@@ -19,7 +19,7 @@ backups_Agent.downstreamAgents = [system_security_Agent]
 system_security_Agent.downstreamAgents = [anti_virus_Agent]
 anti_virus_Agent.downstreamAgents = [access_control_Agent]
 access_control_Agent.downstreamAgents = [incident_response_Agent]
-incident_response_Agent.downstreamAgents = [greeting_Agent]
+incident_response_Agent.downstreamAgents = []
 
 
 // Inject the transfer tools into the agents

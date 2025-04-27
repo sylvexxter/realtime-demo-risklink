@@ -1,133 +1,88 @@
-# Realtime API Agents Demo
+# 1. Cybersecurity Risk Assessment with OpenAI Realtime API
 
-This is a simple demonstration of more advanced, agentic patterns built on top of the Realtime API. In particular, this demonstrates:
-- Sequential agent handoffs according to a defined agent graph (taking inspiration from [OpenAI Swarm](https://github.com/openai/swarm))
-- Background escalation to more intelligent models like o1-mini for high-stakes decisions
-- Prompting models to follow a state machine, for example to accurately collect things like names and phone numbers with confirmation character by character to authenticate a user.
+## 2. Introduction
 
-You should be able to use this repo to prototype your own multi-agent realtime voice app in less than 20 minutes!
+This project demonstrates a conversational cybersecurity risk assessment tool built using the OpenAI Realtime API. Engage in a natural conversation with an AI agent that guides you through various cybersecurity domains, asks relevant questions based on common frameworks, and helps identify potential areas of risk within your organization. The system leverages multiple specialized AI agents, each focusing on a specific domain like Access Control, Data Protection, or Incident Response.
 
+## 3. Screenshot
+
+*(Placeholder for screenshot - path to be provided)*
 ![Screenshot of the Realtime API Agents Demo](/public/screenshot.png)
 
-## Setup
 
-- This is a Next.js typescript app
-- Install dependencies with `npm i`
-- Add your `OPENAI_API_KEY` to your env
-- Start the server with `npm run dev`
-- Open your browser to [http://localhost:3000](http://localhost:3000) to see the app. It should automatically connect to the `simpleExample` Agent Set.
+## 4. Prerequisites
 
-## Configuring Agents
-Configuration in `src/app/agentConfigs/simpleExample.ts`
-```javascript
-import { AgentConfig } from "@/app/types";
-import { injectTransferTools } from "./utils";
+Before you begin, ensure you have the following installed on your system:
 
-// Define agents
-const haiku: AgentConfig = {
-  name: "haiku",
-  publicDescription: "Agent that writes haikus.", // Context for the agent_transfer tool
-  instructions:
-    "Ask the user for a topic, then reply with a haiku about that topic.",
-  tools: [],
-};
+*   **Node.js:** Required to run the application runtime.
+*   **npm (or yarn):** Node package manager, usually included with Node.js.
+*   **OpenAI API Key:** Needed for the AI agents to function.
+*   **LibreOffice:** Required for the PDF report generation feature.
 
-const greeter: AgentConfig = {
-  name: "greeter",
-  publicDescription: "Agent that greets the user.",
-  instructions:
-    "Please greet the user and ask them if they'd like a Haiku. If yes, transfer them to the 'haiku' agent.",
-  tools: [],
-  downstreamAgents: [haiku],
-};
+### Installation Instructions:
 
-// add the transfer tool to point to downstreamAgents
-const agents = injectTransferTools([greeter, haiku]);
+**macOS:**
 
-export default agents;
-```
+*   **Node.js & npm:**
+    *   The easiest way is using Homebrew:
+        ```bash
+        brew install node
+        ```
+    *   Alternatively, download the installer from [nodejs.org](https://nodejs.org/).
+*   **LibreOffice:**
+    *   Using Homebrew:
+        ```bash
+        brew install --cask libreoffice
+        ```
+    *   Or download from the [LibreOffice website](https://www.libreoffice.org/download/download-libreoffice/).
 
-This fully specifies the agent set that was used in the interaction shown in the screenshot above.
+**Windows:**
 
-### Next steps
-- Check out the configs in `src/app/agentConfigs`. The example above is a minimal demo that illustrates the core concepts.
-- [frontDeskAuthentication](src/app/agentConfigs/frontDeskAuthentication) Guides the user through a step-by-step authentication flow, confirming each value character-by-character, authenticates the user with a tool call, and then transfers to another agent. Note that the second agent is intentionally "bored" to show how to prompt for personality and tone.
-- [customerServiceRetail](src/app/agentConfigs/customerServiceRetail) Also guides through an authentication flow, reads a long offer from a canned script verbatim, and then walks through a complex return flow which requires looking up orders and policies, gathering user context, and checking with `o1-mini` to ensure the return is eligible. To test this flow, say that you'd like to return your snowboard and go through the necessary prompts!
+*   **Node.js & npm:**
+    *   Download the installer from [nodejs.org](https://nodejs.org/). npm is included.
+*   **LibreOffice (Optional):**
+    *   Download the installer from the [LibreOffice website](https://www.libreoffice.org/download/download-libreoffice/).
 
-### Defining your own agents
-- You can copy these to make your own multi-agent voice app! Once you make a new agent set config, add it to `src/app/agentConfigs/index.ts` and you should be able to select it in the UI in the "Scenario" dropdown menu.
-- To see how to define tools and toolLogic, including a background LLM call, see [src/app/agentConfigs/customerServiceRetail/returns.ts](src/app/agentConfigs/customerServiceRetail/returns.ts)
-- To see how to define a detailed personality and tone, and use a prompt state machine to collect user information step by step, see [src/app/agentConfigs/frontDeskAuthentication/authentication.ts](src/app/agentConfigs/frontDeskAuthentication/authentication.ts)
-- To see how to wire up Agents into a single Agent Set, see [src/app/agentConfigs/frontDeskAuthentication/index.ts](src/app/agentConfigs/frontDeskAuthentication/index.ts)
-- If you want help creating your own prompt using these conventions, we've included a metaprompt [here](src/app/agentConfigs/voiceAgentMetaprompt.txt), or you can use our [Voice Agent Metaprompter GPT](https://chatgpt.com/g/g-678865c9fb5c81918fa28699735dd08e-voice-agent-metaprompt-gpt)
+## 5. Getting Started
 
-## UI
-- You can select agent scenarios in the Scenario dropdown, and automatically switch to a specific agent with the Agent dropdown.
-- The conversation transcript is on the left, including tool calls, tool call responses, and agent changes. Click to expand non-message elements.
-- The event log is on the right, showing both client and server events. Click to see the full payload.
-- On the bottom, you can disconnect, toggle between automated voice-activity detection or PTT, turn off audio playback, and toggle logs.
+Once the prerequisites are installed:
 
-## Core Contributors
-- Noah MacCallum - [noahmacca](https://x.com/noahmacca)
-- Ilan Bigio - [ibigio](https://github.com/ibigio)
+1.  **Clone the repository:**
+    ```bash
+    git clone <https://github.com/sylvexxter/realtime-demo-risklink.git> 
+    cd <realtime-demo-risklink>
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+    *(If you prefer yarn: `yarn install`)*
+3.  **Configure Environment Variables:**
+    *   Create a file named `.env` in the root directory of the project.
+    *   Add your OpenAI API Key to this file:
+        ```
+        OPENAI_API_KEY=your_api_key_here
+        ```
+4.  **Run the application:**
+    ```bash
+    npm run dev
+    ```
+5.  Open your browser to [http://localhost:3000](http://localhost:3000). The application should load and be ready for interaction.
 
+## 6. PDF Report Generation
 
-## Feature: Automated Report Generation for Initial Risk Assessment
+This application includes a feature to generate a consolidated PDF report summarizing the risk assessment findings up to a certain point.
 
-To automatically capture key information during the `initialRiskAssessment` flow, agents now generate JSON reports upon completing their specific tasks.
+## 7. Core Contributors
 
-**How it Works:**
+This project was developed as part of a capstone project for the Master of Science in Information Security Policy and Management (MSISPM) program at Carnegie Mellon University.
 
-1.  **Greeting Agent Report:**
-    *   After collecting the user's name, company, and position, the `greeting` agent uses its `saveUserDetails` tool.
-    *   This tool directly constructs a JSON object containing the collected details and a timestamp.
-    *   It saves this information to `src/json_reports/initialRiskAssessment/user_information.json`.
-
-2.  **Assessment Agent Reports (Training Awareness, Asset Management, etc.):**
-    *   After asking all their specific questions (e.g., 3 questions for Training Awareness, 11 for Asset Management), each assessment agent calls its corresponding report generation tool (e.g., `generateTrainingAwarenessReport`, `generateAssetManagementReport`).
-    *   The `toolLogic` for these tools performs the following:
-        *   It receives the conversation transcript relevant to that agent's interaction (filtered to focus on user/assistant messages during that agent's activity).
-        *   It sends this transcript segment and a detailed prompt to a secondary LLM (`gpt-4.1-nano` by default).
-        *   The prompt instructs the LLM to analyze the Q&A pairs and output a structured JSON array summarizing each question's ID, description, the user's answer ("YES", "NO", "NOT APPLICABLE"), any additional context provided by the user, and a ternary representation of the answer (1, 0, 9).
-        *   The resulting JSON string is then saved using the backend `/api/saveReport` utility.
-    *   These reports are saved to `src/json_reports/initialRiskAssessment/` using the naming convention `<agent_name>_report.json` (e.g., `training_awareness_report.json`, `asset_management_report.json`, etc.).
-
-**Outcome:**
-
-This provides a structured, automated way to log both the initial user information and the detailed responses gathered during each stage of the `initialRiskAssessment`. These JSON files can be used for review, analysis, or integration with other systems.
-
-### Optional: Headless PDF Conversion with LibreOffice
-
-If you don't have Microsoft Word installed (e.g., on Linux), you can install LibreOffice and use it to convert DOCX to PDF:
-
-- **macOS (Homebrew):**
-  ```bash
-  brew install --cask libreoffice
-  ```
-- **Ubuntu/Debian:**
-  ```bash
-  sudo apt-get update
-  sudo apt-get install libreoffice-writer libreoffice-core
-  ```
-
-Then, in `pdf_reporting/report_generation.py`, add a fallback around the existing `convert` call:
-```python
-from docx2pdf import convert
-
-# ... earlier code rendering and saving `final_docx` ...
-try:
-    # Primary conversion using docx2pdf (Windows/macOS)
-    convert(final_docx, final_pdf)
-except Exception:
-    # Fallback to LibreOffice headless conversion
-    import subprocess, os
-    subprocess.run([
-        'soffice',
-        '--headless',
-        '--convert-to', 'pdf',
-        final_docx,
-        '--outdir', os.getcwd()
-    ], check=True)
-```
-
-This ensures your DOCX template is converted to PDF on any platform that has LibreOffice installed.
+*   **OpenAI Contacts:**
+    *   Noah MacCallum - [noahmacca](https://x.com/noahmacca)
+    *   Ilan Bigio - [ibigio](https://github.com/ibigio)
+*   **CMU Capstone Team:**
+    *   Sneh Sadaria - [sylvexxter]
+    *   Khushi Shah
+    *   Wendy Hu
+    *   Yan Tian
+    *   Tra-Vaughn James 
