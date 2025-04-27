@@ -1,16 +1,10 @@
-# 1. Cybersecurity Risk Assessment with OpenAI Realtime API
+# Cybersecurity Risk Assessment with OpenAI Realtime API
 
-## 2. Introduction
+## 1. Introduction
 
 This project demonstrates a conversational cybersecurity risk assessment tool built using the OpenAI Realtime API. Engage in a natural conversation with an AI agent that guides you through various cybersecurity domains, asks relevant questions based on common frameworks, and helps identify potential areas of risk within your organization. The system leverages multiple specialized AI agents, each focusing on a specific domain like Access Control, Data Protection, or Incident Response.
 
-## 3. Screenshot
-
-*(Placeholder for screenshot - path to be provided)*
-![Screenshot of the Realtime API Agents Demo](/public/screenshot.png)
-
-
-## 4. Prerequisites
+## 2. Prerequisites
 
 Before you begin, ensure you have the following installed on your system:
 
@@ -43,7 +37,7 @@ Before you begin, ensure you have the following installed on your system:
 *   **LibreOffice (Optional):**
     *   Download the installer from the [LibreOffice website](https://www.libreoffice.org/download/download-libreoffice/).
 
-## 5. Getting Started
+## 3. Getting Started
 
 Once the prerequisites are installed:
 
@@ -73,13 +67,13 @@ Once the prerequisites are installed:
     ```
 6.  Open your browser to [http://localhost:3000](http://localhost:3000). The application should load and be ready for interaction.
 
-## 6. PDF Report Generation
+## 4. PDF Report Generation
 
 This application includes a feature to generate a consolidated PDF report summarizing the risk assessment findings up to a certain point.
 
-## 7. Core Contributors
+## 5. Core Contributors
 
-This project was developed as part of a capstone project for the Master of Science in Information Security Policy and Management (MSISPM) program at Carnegie Mellon University.
+This project was developed as part of a capstone project for the Master of Science in Information Security Policy and Management (MSISPM) program at Carnegie Mellon University. It was built on previous work done by OpenAI.
 
 *   **OpenAI Contacts:**
     *   Noah MacCallum - [noahmacca](https://x.com/noahmacca)
