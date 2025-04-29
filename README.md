@@ -100,8 +100,8 @@ This project was developed as part of a capstone project for the Master of Scien
     *   Noah MacCallum - [noahmacca](https://x.com/noahmacca)
     *   Ilan Bigio - [ibigio](https://github.com/ibigio)
 *   **CMU Capstone Team:**
-    *   Sneh Sadaria - [sylvexxter]
-    *   Khushi Shah - [khushi2609]
+    *   Sneh Sadaria - [sylvexxter](https://github.com/sylvexxter)
+    *   Khushi Shah - [khushi2609](https://github.com/khushi2609)
     *   Wendy Hu
     *   Yan Tian
     *   Tra-Vaughn James 
