@@ -88,6 +88,10 @@ The application follows a multi-agent architecture designed for real-time voice-
 
 This application includes a feature to generate a consolidated PDF report summarizing the risk assessment findings up to a certain point.
 
+## 8. Future Work
+
+Potential future enhancements and features are being tracked. For details on upcoming work, such as the proposed addition of domain-specific summaries in the generated reports, please see the [Future Implementations documentation](./Future_Implementations.md).
+
 ## 7. Core Contributors
 
 This project was developed as part of a capstone project for the Master of Science in Information Security Policy and Management (MSISPM) program at Carnegie Mellon University. It was built on previous work done by OpenAI.
