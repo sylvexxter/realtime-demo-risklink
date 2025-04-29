@@ -101,7 +101,7 @@ This project was developed as part of a capstone project for the Master of Scien
     *   Ilan Bigio - [ibigio](https://github.com/ibigio)
 *   **CMU Capstone Team:**
     *   Sneh Sadaria - [sylvexxter]
-    *   Khushi Shah
+    *   Khushi Shah - [khushi2609]
     *   Wendy Hu
     *   Yan Tian
     *   Tra-Vaughn James 
